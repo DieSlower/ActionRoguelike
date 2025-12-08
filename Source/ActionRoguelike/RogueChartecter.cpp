@@ -3,8 +3,12 @@
 
 #include "RogueChartecter.h"
 
+#include <rapidjson/document.h>
+
+#include "EnhancedInputComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "HAL/MallocBinned2.h"
 
 // Sets default values
 ARogueChartecter::ARogueChartecter()
@@ -28,6 +32,15 @@ void ARogueChartecter::BeginPlay()
 	
 }
 
+void ARogueChartecter::Move(const FInputActionValue& InValue)
+{
+	FVector2D InputValue = InValue.Get<FVector2D>();
+	
+	FVector MoveDirection = FVector(InputValue.X, InputValue.Y, 0.0f);
+	
+	AddMovementInput(MoveDirection);
+}
+
 // Called every frame
 void ARogueChartecter::Tick(float DeltaTime)
 {
@@ -39,6 +52,9 @@ void ARogueChartecter::Tick(float DeltaTime)
 void ARogueChartecter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	
+	UEnhancedInputComponent* EnhancedInput = Cast<UEnhancedInputComponent>(PlayerInputComponent);
 
+	EnhancedInput->BindAction(Input_Move, ETriggerEvent::Triggered, this, &ARogueChartecter::Move);
 }
 
