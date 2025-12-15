@@ -69,14 +69,23 @@ void ARogueChartecter::Look(const FInputActionInstance& InValue)
 
 void ARogueChartecter::PrimaryAttack()
 {
+	PlayAnimMontage(AttackMontoge);
 	
+	FTimerHandle AttackTimerHandle;
+	const float AttackDelayTime = 0.2f;
+	GetWorldTimerManager().SetTimer(AttackTimerHandle, this, &ARogueChartecter::AttackTimerElapsed, AttackDelayTime);
+	
+}
+
+void ARogueChartecter::AttackTimerElapsed()
+{
 	FVector SpawnLocation = GetMesh()->GetSocketLocation(MuzzleSocketName);
-	FRotator SpawnRotation = GetControlRotation();
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.Instigator = this;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	
-	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
+    FRotator SpawnRotation = GetControlRotation();
+    FActorSpawnParameters SpawnParams;
+    SpawnParams.Instigator = this;
+    SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    
+    GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
 }
 
 // Called every frame
