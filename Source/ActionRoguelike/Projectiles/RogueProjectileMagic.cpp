@@ -31,6 +31,8 @@ void ARogueProjectileMagic::PostInitializeComponents()
 	Super::PostInitializeComponents();
 	
 	SphereComponent->OnComponentHit.AddDynamic(this, &ARogueProjectileMagic::OnActorHit);
+	
+	SphereComponent->IgnoreActorWhenMoving(GetInstigator(), true);
 }
 
 void ARogueProjectileMagic::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit )
@@ -39,8 +41,7 @@ void ARogueProjectileMagic::OnActorHit(UPrimitiveComponent* HitComponent, AActor
 	TSubclassOf<UDamageType> DamageTypeClass = UDamageType::StaticClass();
 	
 	UGameplayStatics::ApplyDamage(OtherActor, 10.f, GetInstigatorController(), this, DamageTypeClass);
-	
-	
+		
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ExplosionEffect, GetActorLocation());
 	
 	Destroy();
