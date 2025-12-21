@@ -6,6 +6,9 @@
 #include "GameFramework/Actor.h"
 #include "ExplodingObject.generated.h"
 
+class URadialForceComponent;
+class UNiagaraSystem;
+class UNiagaraComponent;
 class USphereComponent;
 class UMeshComponent;
 
@@ -26,7 +29,24 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category="Components")
 	TObjectPtr<UMeshComponent> MeshComponent;
 	
+	UPROPERTY(EditDefaultsOnly, Category="Components")
+	TObjectPtr<URadialForceComponent> ExplosionForceComponent;
+	
+	
+	UPROPERTY(EditDefaultsOnly, Category="Effects")
+	TObjectPtr<UNiagaraSystem> FireAnimation;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Effects")
+	TObjectPtr<UNiagaraSystem> ExplosionAnimation;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Sound")
+	TObjectPtr<USoundBase> ExplosionSound;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Sound")
+	TObjectPtr<USoundBase> ExplosionAftermathSound;
+	
 	float mTotalDamage = 0.0f;
+	bool mDeathTimerSet = false;
 	
 	UFUNCTION()
 	void OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit );
