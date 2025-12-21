@@ -28,25 +28,27 @@ AExplodingObject::AExplodingObject()
 
 	ExplosionForceComponent = CreateDefaultSubobject<URadialForceComponent>(TEXT("ExplosionForceComp"));
 	ExplosionForceComponent->SetupAttachment((MeshComponent));
+	ExplosionForceComponent->bAutoActivate = false;
+	ExplosionForceComponent->bIgnoreOwningActor = true;
 	ExplosionForceComponent->ImpulseStrength=500000;
 	ExplosionForceComponent->Radius=100000;
 	ExplosionForceComponent->DestructibleDamage = 100;
 }
 
-void AExplodingObject::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
-{	
-	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Green, "Hit");	
-}
-
 void AExplodingObject::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-	
-	MeshComponent->OnComponentHit.AddDynamic(this, &AExplodingObject::OnActorHit);
 }
 
 float AExplodingObject::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, 	class AController* EventInstigator, AActor* DamageCauser)
 {
+	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	
+	if (GetWorldTimerManager().TimerExists(mDeathTimerHandle))
+	{
+		return ActualDamage;
+	}
+	
 	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Red, "Damage");
 	mTotalDamage += DamageAmount;
 	
@@ -65,13 +67,12 @@ float AExplodingObject::TakeDamage(float DamageAmount, struct FDamageEvent const
 			
 	if (mTotalDamage >= 30.0f && !mDeathTimerSet)
 	{
-		FTimerHandle DeathTimerHandle;
 		const float DeathDelayTime = 5.f;
-		GetWorldTimerManager().SetTimer(DeathTimerHandle, this, &AExplodingObject::DeathTimerElapsed, DeathDelayTime);	
+		GetWorldTimerManager().SetTimer(mDeathTimerHandle, this, &AExplodingObject::DeathTimerElapsed, DeathDelayTime);	
 		mDeathTimerSet = true;
 	}
 	
-	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	return ActualDamage;
 }
 
 // Called when the game starts or when spawned

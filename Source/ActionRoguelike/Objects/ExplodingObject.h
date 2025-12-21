@@ -47,10 +47,7 @@ protected:
 	
 	float mTotalDamage = 0.0f;
 	bool mDeathTimerSet = false;
-	
-	UFUNCTION()
-	void OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit );
-	
+	FTimerHandle mDeathTimerHandle;	
 	virtual void PostInitializeComponents() override;
 	
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
