@@ -1,3 +1,3 @@
 ﻿#pragma once
 
-#define ECC_GameTraceChannel1 COLLISION_INTERACTION;
+#define COLLISION_INTERACTION ECC_GameTraceChannel1;
