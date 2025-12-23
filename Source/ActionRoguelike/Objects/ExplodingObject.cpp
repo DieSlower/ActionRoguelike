@@ -49,16 +49,9 @@ float AExplodingObject::TakeDamage(float DamageAmount, struct FDamageEvent const
 		return ActualDamage;
 	}
 	
-	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Red, "Damage");
 	mTotalDamage += DamageAmount;
 	
-	FString TheFloatStr = FString::SanitizeFloat(mTotalDamage);
-	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Yellow, TheFloatStr);	
-	
-	TheFloatStr = FString::SanitizeFloat(DamageEvent.GetTypeID());
-		GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::White, TheFloatStr);
-	
-	if ( DamageEvent.IsOfType(1))
+	if ( DamageEvent.IsOfType(FPointDamageEvent::ClassID))
 	{	
 		const FPointDamageEvent* pointDamageEvent = static_cast<const FPointDamageEvent*>(&DamageEvent);
 		UNiagaraFunctionLibrary::SpawnSystemAttached(FireAnimation, MeshComponent, "FireLocation",
@@ -70,6 +63,10 @@ float AExplodingObject::TakeDamage(float DamageAmount, struct FDamageEvent const
 		const float DeathDelayTime = 5.f;
 		GetWorldTimerManager().SetTimer(mDeathTimerHandle, this, &AExplodingObject::DeathTimerElapsed, DeathDelayTime);	
 		mDeathTimerSet = true;
+		
+		FString TheFloatStr = FString::SanitizeFloat(mTotalDamage);
+		GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Yellow, "Damage: " + TheFloatStr);
+		GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Yellow, "Exploding....");
 	}
 	
 	return ActualDamage;

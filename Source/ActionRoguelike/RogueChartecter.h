@@ -41,9 +41,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category="PrimaryAttack")
 	TObjectPtr<UAnimMontage> AttackMontoge;
 	
-	//UPROPERTY(EditDefaultsOnly, Category="Movement")
-	//TObjectPtr<UAnimMontage> JumpMontoge;
-	
 	UPROPERTY(EditDefaultsOnly, Category="Input")
 	TObjectPtr<UInputAction> Input_Move;
 	

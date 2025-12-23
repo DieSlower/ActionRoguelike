@@ -1,0 +1,38 @@
+﻿// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Core/RogueInteractionInterface.h"
+#include "GameFramework/Actor.h"
+#include "RogueItemChest.generated.h"
+
+UCLASS()
+class ACTIONROGUELIKE_API ARogueItemChest : public AActor, public IRogueInteractionInterface
+{
+	GENERATED_BODY()
+
+protected:
+	UPROPERTY(EditDefaultsOnly, Category="Components")
+	TObjectPtr<UStaticMeshComponent> BaseMeshComponent;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Components")
+	TObjectPtr<UStaticMeshComponent> LidMeshComponent;
+	
+	UPROPERTY(EditAnywhere, Category="Animation")
+	float AnimationSpeed = 50.0f;
+	
+	UPROPERTY(EditAnywhere, Category="Animation")
+	float AnimationTargetPitch = 120.f;
+	
+	float CurrentLidPitch = 0.f;
+	
+public:
+	virtual void Interact() override;
+	
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+	
+	// Sets default values for this actor's properties
+	ARogueItemChest();
+};
