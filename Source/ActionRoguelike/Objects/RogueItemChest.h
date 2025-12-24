@@ -27,6 +27,9 @@ protected:
 	
 	float CurrentLidPitch = 0.f;
 	
+	UFUNCTION(BlueprintImplementableEvent)
+	void ChestAnimationComplete();
+	
 public:
 	virtual void Interact() override;
 	
