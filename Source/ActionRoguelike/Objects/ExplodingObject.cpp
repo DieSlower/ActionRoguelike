@@ -30,9 +30,21 @@ AExplodingObject::AExplodingObject()
 	ExplosionForceComponent->SetupAttachment((MeshComponent));
 	ExplosionForceComponent->bAutoActivate = false;
 	ExplosionForceComponent->bIgnoreOwningActor = true;
-	ExplosionForceComponent->ImpulseStrength=500000;
+	ExplosionForceComponent->ImpulseStrength=50000;
 	ExplosionForceComponent->Radius=100000;
 	ExplosionForceComponent->DestructibleDamage = 100;
+}
+
+void AExplodingObject::Explode()
+{
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ExplosionAnimation, GetActorLocation());
+	UGameplayStatics::PlaySoundAtLocation(this, ExplosionSound, GetActorLocation(), FRotator::ZeroRotator);
+	UGameplayStatics::PlaySoundAtLocation(this, ExplosionAftermathSound, GetActorLocation(), FRotator::ZeroRotator);
+	
+	ExplosionForceComponent->FireImpulse();
+	
+	MeshComponent->AddImpulse(FVector::UpVector * 1000, NAME_None, true);
+	MeshComponent->AddAngularImpulseInDegrees(FVector::UpVector * 10000, NAME_None, true);
 }
 
 void AExplodingObject::PostInitializeComponents()
@@ -60,8 +72,7 @@ float AExplodingObject::TakeDamage(float DamageAmount, struct FDamageEvent const
 			
 	if (mTotalDamage >= 30.0f && !mDeathTimerSet)
 	{
-		const float DeathDelayTime = 5.f;
-		GetWorldTimerManager().SetTimer(mDeathTimerHandle, this, &AExplodingObject::DeathTimerElapsed, DeathDelayTime);	
+		GetWorldTimerManager().SetTimer(mDeathTimerHandle, this, &AExplodingObject::DeathTimerElapsed, mDeathDelayTime);	
 		mDeathTimerSet = true;
 		
 		FString TheFloatStr = FString::SanitizeFloat(mTotalDamage);
@@ -78,13 +89,14 @@ void AExplodingObject::BeginPlay()
 	Super::BeginPlay();	
 }
 
+void AExplodingObject::DestroyTimerElapsed()
+{
+	Destroy();
+}
+
 void AExplodingObject::DeathTimerElapsed()
 {
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ExplosionAnimation, GetActorLocation());
-	UGameplayStatics::PlaySoundAtLocation(this, ExplosionSound, GetActorLocation(), FRotator::ZeroRotator);
-	UGameplayStatics::PlaySoundAtLocation(this, ExplosionAftermathSound, GetActorLocation(), FRotator::ZeroRotator);
+	Explode();
 	
-	ExplosionForceComponent->FireImpulse();
-	
-	Destroy();
+	GetWorldTimerManager().SetTimer(mDestroyTimerHandle, this, &AExplodingObject::DestroyTimerElapsed, mDestroyDelayTime);	
 }

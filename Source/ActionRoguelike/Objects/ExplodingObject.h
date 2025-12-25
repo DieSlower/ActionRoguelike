@@ -32,7 +32,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category="Components")
 	TObjectPtr<URadialForceComponent> ExplosionForceComponent;
 	
-	
 	UPROPERTY(EditDefaultsOnly, Category="Effects")
 	TObjectPtr<UNiagaraSystem> FireAnimation;
 	
@@ -45,15 +44,26 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category="Sound")
 	TObjectPtr<USoundBase> ExplosionAftermathSound;
 	
+	UPROPERTY(EditDefaultsOnly, Category="Effects")	
+	float mDeathDelayTime = 5.f;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Effects")	
+	float mDestroyDelayTime = 15.f;
+	
+	UFUNCTION(BlueprintCallable)
+	void Explode();
+	
 	float mTotalDamage = 0.0f;
 	bool mDeathTimerSet = false;
-	FTimerHandle mDeathTimerHandle;	
+	FTimerHandle mDeathTimerHandle;
+	FTimerHandle mDestroyTimerHandle;	
 	virtual void PostInitializeComponents() override;
 	
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	void DestroyTimerElapsed();
 	void DeathTimerElapsed();
 
 

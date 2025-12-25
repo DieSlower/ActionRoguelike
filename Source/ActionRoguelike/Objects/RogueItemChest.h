@@ -31,7 +31,7 @@ protected:
 	void ChestAnimationComplete();
 	
 public:
-	virtual void Interact() override;
+	virtual void Interact_Implementation() override;
 	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
