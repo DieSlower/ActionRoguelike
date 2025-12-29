@@ -24,6 +24,7 @@ ARoguePlayerCharacter::ARoguePlayerCharacter()
 	CameraComponent->SetupAttachment(SpringArmComponent);
 	
 	MuzzleSocketName = "Muzzle_01";
+	Muzzle2SocketName = "Muzzle_02";
 }
 
 // Called when the game starts or when spawned
@@ -46,6 +47,7 @@ void ARoguePlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 	EnhancedInput->BindAction(Input_JumpAction, ETriggerEvent::Triggered, this, &ARoguePlayerCharacter::Jump);
 	
 	EnhancedInput->BindAction(Input_PrimaryAttack, ETriggerEvent::Triggered, this, &ARoguePlayerCharacter::PrimaryAttack);
+	EnhancedInput->BindAction(Input_SecondaryAttack, ETriggerEvent::Triggered, this, &ARoguePlayerCharacter::SecondaryAttack);
 }
 
 void ARoguePlayerCharacter::Move(const FInputActionValue& InValue)
@@ -75,16 +77,29 @@ void ARoguePlayerCharacter::PrimaryAttack()
 {
 	PlayAnimMontage(AttackMontoge);
 	
-	FTimerHandle AttackTimerHandle;
-	const float AttackDelayTime = 0.2f;
-	
 	UNiagaraFunctionLibrary::SpawnSystemAttached(CastingEffect, GetMesh(), MuzzleSocketName, 
 		FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::Type::SnapToTarget, true );
 	
 	UGameplayStatics::PlaySound2D(this, CastingSound);
-	
+
+	FTimerHandle AttackTimerHandle;
+	const float AttackDelayTime = 0.2f;
 	GetWorldTimerManager().SetTimer(AttackTimerHandle, this, &ARoguePlayerCharacter::AttackTimerElapsed, AttackDelayTime);
 	
+}
+
+void ARoguePlayerCharacter::SecondaryAttack()
+{
+	PlayAnimMontage(Attack2Montoge);
+	
+	UNiagaraFunctionLibrary::SpawnSystemAttached(Casting2Effect, GetMesh(), Muzzle2SocketName, 
+		FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::Type::SnapToTarget, true );
+	
+	UGameplayStatics::PlaySound2D(this, Casting2Sound);
+	
+	FTimerHandle Attack2TimerHandle;
+	const float Attack2DelayTime = 0.2f;
+	GetWorldTimerManager().SetTimer(Attack2TimerHandle, this, &ARoguePlayerCharacter::Attack2TimerElapsed, Attack2DelayTime);
 }
 
 void ARoguePlayerCharacter::AttackTimerElapsed()
@@ -96,6 +111,18 @@ void ARoguePlayerCharacter::AttackTimerElapsed()
     SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
     
     AActor* NewProjectile = GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
+	MoveIgnoreActorAdd(NewProjectile);
+}
+
+void ARoguePlayerCharacter::Attack2TimerElapsed()
+{
+	FVector SpawnLocation = GetMesh()->GetSocketLocation(Muzzle2SocketName);
+	FRotator SpawnRotation = GetControlRotation();
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Instigator = this;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    
+	AActor* NewProjectile = GetWorld()->SpawnActor<AActor>(Projectile2Class, SpawnLocation, SpawnRotation, SpawnParams);
 	MoveIgnoreActorAdd(NewProjectile);
 }
 
