@@ -25,6 +25,7 @@ ARoguePlayerCharacter::ARoguePlayerCharacter()
 	
 	MuzzleSocketName = "Muzzle_01";
 	Muzzle2SocketName = "Muzzle_02";
+	MuzzleTeleportSocketName = MuzzleSocketName;
 }
 
 // Called when the game starts or when spawned
@@ -48,6 +49,8 @@ void ARoguePlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 	
 	EnhancedInput->BindAction(Input_PrimaryAttack, ETriggerEvent::Triggered, this, &ARoguePlayerCharacter::PrimaryAttack);
 	EnhancedInput->BindAction(Input_SecondaryAttack, ETriggerEvent::Triggered, this, &ARoguePlayerCharacter::SecondaryAttack);
+	//EnhancedInput->BindAction(Input_TeleportAttack, ETriggerEvent::Triggered, this, &ARoguePlayerCharacter::Attack, ProjectileTeleportClass, AttackTeleportMontoge, CastingTeleportEffect,
+	//	CastingTeleportSound, MuzzleTeleportSocketName, AttackTeleportTimerHandle, 0.2, &ARoguePlayerCharacter::AttackTeleportTimerElapsed);
 }
 
 void ARoguePlayerCharacter::Move(const FInputActionValue& InValue)
@@ -72,6 +75,20 @@ void ARoguePlayerCharacter::Look(const FInputActionInstance& InValue)
 	AddControllerPitchInput(InputValue.Y);
 	AddControllerYawInput(InputValue.X);
 }
+
+void ARoguePlayerCharacter::Attack(TSubclassOf<ARogueProjectile> ProjectileCls, TObjectPtr<UAnimMontage> AttackMntg, TObjectPtr<UNiagaraSystem> CastingFx,
+	TObjectPtr<USoundBase> CastingSnd, FName SocketName, FTimerHandle TimerHandle, const float AttackDelayTime, FTimerDelegate::TMethodPtr<ARoguePlayerCharacter> InTimerMethod)
+{
+	PlayAnimMontage(AttackMntg);
+	
+	UNiagaraFunctionLibrary::SpawnSystemAttached(CastingFx, GetMesh(), SocketName, 
+		FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::Type::SnapToTarget, true );
+	
+	UGameplayStatics::PlaySound2D(this, CastingSnd);
+	
+	GetWorldTimerManager().SetTimer(TimerHandle, this, InTimerMethod, AttackDelayTime);
+}
+
 
 void ARoguePlayerCharacter::PrimaryAttack()
 {
@@ -124,6 +141,10 @@ void ARoguePlayerCharacter::Attack2TimerElapsed()
     
 	AActor* NewProjectile = GetWorld()->SpawnActor<AActor>(Projectile2Class, SpawnLocation, SpawnRotation, SpawnParams);
 	MoveIgnoreActorAdd(NewProjectile);
+}
+
+void ARoguePlayerCharacter::AttackTeleportTimerElapsed()
+{
 }
 
 // Called every frame

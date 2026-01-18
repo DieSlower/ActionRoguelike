@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "RoguePlayerCharacter.generated.h"
 
+class ARogueTeleportProjectile;
 class ARogueProjectile;
 class UNiagaraSystem;
 class ARogueProjectileMagic;
@@ -57,6 +58,21 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category="SecondaryAttack")
 	TObjectPtr<UAnimMontage> Attack2Montoge;
 	
+	UPROPERTY(EditDefaultsOnly, Category="TeleportAttack")
+	TSubclassOf<ARogueTeleportProjectile> ProjectileTeleportClass;
+	
+	UPROPERTY(EditDefaultsOnly, Category="TeleportAttack")
+	TObjectPtr<UNiagaraSystem> CastingTeleportEffect;
+	
+	UPROPERTY(EditDefaultsOnly, Category="TeleportAttack")
+	TObjectPtr<USoundBase> CastingTeleportSound;
+	
+	UPROPERTY(VisibleAnywhere, Category="TeleportAttack")
+	FName MuzzleTeleportSocketName;
+	
+	UPROPERTY(EditDefaultsOnly, Category="TeleportAttack")
+	TObjectPtr<UAnimMontage> AttackTeleportMontoge;
+	
 	UPROPERTY(EditDefaultsOnly, Category="Input")
 	TObjectPtr<UInputAction> Input_Move;
 	
@@ -72,6 +88,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category="Input")
 	TObjectPtr<UInputAction> Input_SecondaryAttack;
 	
+	UPROPERTY(EditDefaultsOnly, Category="Input")
+	TObjectPtr<UInputAction> Input_TeleportAttack;
+
 	UPROPERTY(VisibleAnywhere, Category="Components")
 	TObjectPtr<UCameraComponent> CameraComponent;
 	
@@ -87,11 +106,16 @@ protected:
 	
 	//void JumpAction();
 	
+	void Attack(TSubclassOf<ARogueProjectile> ProjectileClass, TObjectPtr<UAnimMontage> AttackMontoge, TObjectPtr<UNiagaraSystem> CastingEffect, TObjectPtr<USoundBase> CastingSound, FName MuzzleSocketName, 
+		FTimerHandle AttackTimerHandle, const float AttackDelayTime, typename FTimerDelegate::TMethodPtr<ARoguePlayerCharacter> InTimerMethod);
 	void PrimaryAttack();
 	void SecondaryAttack();
 	
 	void AttackTimerElapsed();
 	void Attack2TimerElapsed();
+	void AttackTeleportTimerElapsed();
+	
+	FTimerHandle AttackTeleportTimerHandle;
 	
 public:	
 	// Called every frame
