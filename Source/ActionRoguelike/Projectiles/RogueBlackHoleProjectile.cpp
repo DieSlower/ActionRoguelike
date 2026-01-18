@@ -7,6 +7,7 @@
 #include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "PhysicsEngine/RadialForceComponent.h"
 
 
 // Sets default values
@@ -16,30 +17,47 @@ ARogueBlackHoleProjectile::ARogueBlackHoleProjectile()
 	LoopedNiagaraComponent->SetupAttachment(SphereComponent);
 	
 	LoopedAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("LoopedAudioComp"));
-	LoopedAudioComponent->SetupAttachment((SphereComponent));
+	LoopedAudioComponent->SetupAttachment(SphereComponent);
 	
-	SphereComponent->SetSphereRadius(260.f);
+	SphereComponent->SetSphereRadius(10.f);
+	SphereComponent->SetCollisionProfileName("BlackHole");
 	
 	ProjectileMovementComponent->InitialSpeed=500.f;
+	
+	GravityForceComponent = CreateDefaultSubobject<URadialForceComponent>(TEXT("GravityForceComp"));
+	GravityForceComponent->SetupAttachment(SphereComponent);
+	GravityForceComponent->bAutoActivate = true;
+	GravityForceComponent->bIgnoreOwningActor = true;
+	GravityForceComponent->Radius=1200;
+	GravityForceComponent->ForceStrength = -900000;
+	GravityForceComponent->DestructibleDamage = 100;
+	GravityForceComponent->RemoveObjectTypeToAffect(UEngineTypes::ConvertToObjectType(ECC_Pawn));
+	
 }
 
 void ARogueBlackHoleProjectile::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+	
+	SphereComponent->OnComponentBeginOverlap.AddDynamic(this, &ARogueBlackHoleProjectile::OnComponentBeginOverlap);
+	SphereComponent->IgnoreActorWhenMoving(GetInstigator(), true);
 }
 
-void ARogueBlackHoleProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
-                                           UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+void ARogueBlackHoleProjectile::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
-	Super::OnActorHit(HitComponent, OtherActor, OtherComp, NormalImpulse, Hit);
+	//GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Red, "OverlapAct: " + OtherActor->GetActorNameOrLabel());
+	//GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Red, "OverlapCom: " + OtherComp->GetName());
 	
-	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Green, "Hit: " + OtherActor->GetActorNameOrLabel());
+	if (OtherComp->IsSimulatingPhysics())
+	{
+		OtherActor->Destroy();
+	}
+			
 }
 
 void ARogueBlackHoleProjectile::DestroyProjectile()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Green, "Black Hole Dead");
-	
+	//GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Green, "Black Hole Dead");
 	Destroy();
 }
 

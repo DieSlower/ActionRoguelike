@@ -6,6 +6,7 @@
 #include "RogueProjectile.h"
 #include "RogueBlackHoleProjectile.generated.h"
 
+class URadialForceComponent;
 class UNiagaraComponent;
 
 UCLASS()
@@ -21,13 +22,17 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category="Components")
 	TObjectPtr<UAudioComponent> LoopedAudioComponent;
 	
+	UPROPERTY(EditDefaultsOnly, Category="Components")
+	TObjectPtr<URadialForceComponent> GravityForceComponent;
+	
 	// Sets default values for this actor's properties
 	ARogueBlackHoleProjectile();
 	
 	virtual void PostInitializeComponents() override;
 	
 protected:
-	virtual void OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit ) override;
+	UFUNCTION()
+	virtual void OnComponentBeginOverlap( UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
 	
 	void DestroyProjectile();
 	
