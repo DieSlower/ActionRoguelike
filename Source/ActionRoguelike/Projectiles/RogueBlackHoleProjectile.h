@@ -9,7 +9,7 @@
 class URadialForceComponent;
 class UNiagaraComponent;
 
-UCLASS()
+UCLASS(Abstract)
 class ACTIONROGUELIKE_API ARogueBlackHoleProjectile : public ARogueProjectile
 {
 	GENERATED_BODY()
