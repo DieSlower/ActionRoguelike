@@ -49,8 +49,7 @@ void ARoguePlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 	
 	EnhancedInput->BindAction(Input_PrimaryAttack, ETriggerEvent::Triggered, this, &ARoguePlayerCharacter::PrimaryAttack);
 	EnhancedInput->BindAction(Input_SecondaryAttack, ETriggerEvent::Triggered, this, &ARoguePlayerCharacter::SecondaryAttack);
-	//EnhancedInput->BindAction(Input_TeleportAttack, ETriggerEvent::Triggered, this, &ARoguePlayerCharacter::Attack, ProjectileTeleportClass, AttackTeleportMontoge, CastingTeleportEffect,
-	//	CastingTeleportSound, MuzzleTeleportSocketName, AttackTeleportTimerHandle, 0.2, &ARoguePlayerCharacter::AttackTeleportTimerElapsed);
+	EnhancedInput->BindAction(Input_TeleportAttack, ETriggerEvent::Triggered, this, &ARoguePlayerCharacter::SpecialAttack);
 }
 
 void ARoguePlayerCharacter::Move(const FInputActionValue& InValue)
@@ -75,20 +74,6 @@ void ARoguePlayerCharacter::Look(const FInputActionInstance& InValue)
 	AddControllerPitchInput(InputValue.Y);
 	AddControllerYawInput(InputValue.X);
 }
-
-void ARoguePlayerCharacter::Attack(TSubclassOf<ARogueProjectile> ProjectileCls, TObjectPtr<UAnimMontage> AttackMntg, TObjectPtr<UNiagaraSystem> CastingFx,
-	TObjectPtr<USoundBase> CastingSnd, FName SocketName, FTimerHandle TimerHandle, const float AttackDelayTime, FTimerDelegate::TMethodPtr<ARoguePlayerCharacter> InTimerMethod)
-{
-	PlayAnimMontage(AttackMntg);
-	
-	UNiagaraFunctionLibrary::SpawnSystemAttached(CastingFx, GetMesh(), SocketName, 
-		FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::Type::SnapToTarget, true );
-	
-	UGameplayStatics::PlaySound2D(this, CastingSnd);
-	
-	GetWorldTimerManager().SetTimer(TimerHandle, this, InTimerMethod, AttackDelayTime);
-}
-
 
 void ARoguePlayerCharacter::PrimaryAttack()
 {
@@ -119,6 +104,20 @@ void ARoguePlayerCharacter::SecondaryAttack()
 	GetWorldTimerManager().SetTimer(Attack2TimerHandle, this, &ARoguePlayerCharacter::Attack2TimerElapsed, Attack2DelayTime);
 }
 
+void ARoguePlayerCharacter::SpecialAttack()
+{
+	PlayAnimMontage(AttackTeleportMontoge);
+	
+	UNiagaraFunctionLibrary::SpawnSystemAttached(CastingTeleportEffect, GetMesh(), MuzzleTeleportSocketName, 
+		FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::Type::SnapToTarget, true );
+	
+	UGameplayStatics::PlaySound2D(this, CastingTeleportSound);
+	
+	FTimerHandle AttackTeleportTimerHandle;
+	const float AttackTeleportDelayTime = 0.2f;
+	GetWorldTimerManager().SetTimer(AttackTeleportTimerHandle, this, &ARoguePlayerCharacter::AttackTeleportTimerElapsed, AttackTeleportDelayTime);
+}
+
 void ARoguePlayerCharacter::AttackTimerElapsed()
 {
 	FVector SpawnLocation = GetMesh()->GetSocketLocation(MuzzleSocketName);
@@ -145,6 +144,14 @@ void ARoguePlayerCharacter::Attack2TimerElapsed()
 
 void ARoguePlayerCharacter::AttackTeleportTimerElapsed()
 {
+	FVector SpawnLocation = GetMesh()->GetSocketLocation(MuzzleTeleportSocketName);
+	FRotator SpawnRotation = GetControlRotation();
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Instigator = this;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    
+	AActor* NewProjectile = GetWorld()->SpawnActor<AActor>(ProjectileTeleportClass, SpawnLocation, SpawnRotation, SpawnParams);
+	MoveIgnoreActorAdd(NewProjectile);
 }
 
 // Called every frame

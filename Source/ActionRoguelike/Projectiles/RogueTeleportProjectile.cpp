@@ -25,7 +25,9 @@ ARogueTeleportProjectile::ARogueTeleportProjectile()
 void ARogueTeleportProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	
+		
+	const float LifeTime = 3.f;
+	GetWorldTimerManager().SetTimer(LifeTimerHandle, this, &ARogueTeleportProjectile::LifeTimerElapsed, LifeTime);
 }
 
 void ARogueTeleportProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
@@ -33,15 +35,36 @@ void ARogueTeleportProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AAc
 {
 	//Super::OnActorHit(HitComponent, OtherActor, OtherComp, NormalImpulse, Hit);
 		
-	Teleport();
+	StartTeleport();
 }
 
-void ARogueTeleportProjectile::Teleport()
+void ARogueTeleportProjectile::LifeTimerElapsed()
 {
+	StartTeleport();
+}
+
+void ARogueTeleportProjectile::StartTeleport()
+{
+	GetWorldTimerManager().ClearTimer(LifeTimerHandle);
+	
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ExplosionEffect, GetActorLocation());
 	
 	UGameplayStatics::PlaySoundAtLocation(this, ExplosionSound, GetActorLocation(), FRotator::ZeroRotator);
-	// Actor->TeleportTo(…)
+	
+	FTimerHandle PortalTimerHandle;
+	const float LifeTime = 0.2f;
+	GetWorldTimerManager().SetTimer(PortalTimerHandle, this, &ARogueTeleportProjectile::CompleteTeleport, LifeTime);
+}
+
+void ARogueTeleportProjectile::CompleteTeleport()
+{
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, PortalCloseEffect, GetActorLocation());
+	
+	UGameplayStatics::PlaySoundAtLocation(this, PortalCloseSound, GetActorLocation(), FRotator::ZeroRotator);
+	
+	APawn* MyCharacter = GetWorld()->GetFirstPlayerController()->GetPawn();
+	
+	MyCharacter->TeleportTo(GetActorLocation(), MyCharacter->GetActorRotation());
 	
 	Destroy();
 }

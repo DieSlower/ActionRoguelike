@@ -23,11 +23,22 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category="Components")
 	TObjectPtr<UAudioComponent> LoopedAudioComponent;
 
+	UPROPERTY(EditDefaultsOnly, Category="Effects")
+	TObjectPtr<UNiagaraSystem> PortalCloseEffect;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Sound")
+	TObjectPtr<USoundBase> PortalCloseSound;
+	
 protected:
+	FTimerHandle LifeTimerHandle;
+	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	virtual void OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit ) override;
-
-	void Teleport();
+	
+	void LifeTimerElapsed();
+	
+	void StartTeleport();
+	void CompleteTeleport();
 };

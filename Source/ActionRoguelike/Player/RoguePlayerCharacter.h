@@ -29,7 +29,7 @@ public:
 protected:
 	
 	UPROPERTY(EditDefaultsOnly, Category="PrimaryAttack")
-	TSubclassOf<ARogueProjectileMagic> ProjectileClass;
+	TSubclassOf<ARogueProjectile> ProjectileClass;
 	
 	UPROPERTY(EditDefaultsOnly, Category="PrimaryAttack")
 	TObjectPtr<UNiagaraSystem> CastingEffect;
@@ -59,7 +59,7 @@ protected:
 	TObjectPtr<UAnimMontage> Attack2Montoge;
 	
 	UPROPERTY(EditDefaultsOnly, Category="TeleportAttack")
-	TSubclassOf<ARogueTeleportProjectile> ProjectileTeleportClass;
+	TSubclassOf<ARogueProjectile> ProjectileTeleportClass;
 	
 	UPROPERTY(EditDefaultsOnly, Category="TeleportAttack")
 	TObjectPtr<UNiagaraSystem> CastingTeleportEffect;
@@ -105,17 +105,14 @@ protected:
 	void Look(const FInputActionInstance& InValue);
 	
 	//void JumpAction();
-	
-	void Attack(TSubclassOf<ARogueProjectile> ProjectileClass, TObjectPtr<UAnimMontage> AttackMontoge, TObjectPtr<UNiagaraSystem> CastingEffect, TObjectPtr<USoundBase> CastingSound, FName MuzzleSocketName, 
-		FTimerHandle AttackTimerHandle, const float AttackDelayTime, typename FTimerDelegate::TMethodPtr<ARoguePlayerCharacter> InTimerMethod);
+
 	void PrimaryAttack();
 	void SecondaryAttack();
+	void SpecialAttack();
 	
 	void AttackTimerElapsed();
 	void Attack2TimerElapsed();
 	void AttackTeleportTimerElapsed();
-	
-	FTimerHandle AttackTeleportTimerHandle;
 	
 public:	
 	// Called every frame
