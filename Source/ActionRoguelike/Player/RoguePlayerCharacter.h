@@ -30,6 +30,9 @@ public:
 
 protected:
 	
+	UPROPERTY(EditDefaultsOnly, Category="Death")
+	TObjectPtr<UAnimMontage> DeathMontoge;
+	
 	UPROPERTY(EditDefaultsOnly, Category="PrimaryAttack")
 	TSubclassOf<ARogueProjectile> ProjectileClass;
 	
@@ -102,12 +105,11 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	TObjectPtr<URogueActionSystemComponent> ActionSystemComponent;
 	
-	
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-	
 	void Move(const FInputActionValue& InValue);
 	void Look(const FInputActionInstance& InValue);
+	
+	UFUNCTION()
+	void OnHealthChanged(float NewHealth, float OldHealth);
 	
 	//void JumpAction();
 
@@ -119,22 +121,12 @@ protected:
 	void Attack2TimerElapsed();
 	void AttackTeleportTimerElapsed();
 	
+	
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	virtual void PostInitializeComponents() override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 };
-
-inline float ARoguePlayerCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
-	class AController* EventInstigator, AActor* DamageCauser)
-{
-	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser); 
-	
-	ActionSystemComponent->ApplyHealthChange(-ActualDamage);
-	
-	return ActualDamage;
-}

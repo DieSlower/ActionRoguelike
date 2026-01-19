@@ -8,6 +8,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "ActionSystem/RogueActionSystemComponent.h"
 #include "Camera/CameraComponent.h"
+#include "GameFramework/PawnMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -31,11 +32,12 @@ ARoguePlayerCharacter::ARoguePlayerCharacter()
 	MuzzleTeleportSocketName = MuzzleSocketName;
 }
 
-// Called when the game starts or when spawned
-void ARoguePlayerCharacter::BeginPlay()
+
+void ARoguePlayerCharacter::PostInitializeComponents()
 {
-	Super::BeginPlay();
+	Super::PostInitializeComponents();
 	
+	ActionSystemComponent->OnHealthChanged.AddDynamic(this, &ARoguePlayerCharacter::OnHealthChanged);
 }
 
 // Called to bind functionality to input
@@ -76,6 +78,19 @@ void ARoguePlayerCharacter::Look(const FInputActionInstance& InValue)
 	
 	AddControllerPitchInput(InputValue.Y);
 	AddControllerYawInput(InputValue.X);
+}
+
+void ARoguePlayerCharacter::OnHealthChanged(float NewHealth, float OldHealth)
+{
+	// Died?
+	if (FMath::IsNearlyZero(NewHealth))
+	{
+		DisableInput(nullptr);
+		
+		GetMovementComponent()->StopMovementImmediately();
+		
+		PlayAnimMontage(DeathMontoge);
+	}
 }
 
 void ARoguePlayerCharacter::PrimaryAttack()
@@ -157,11 +172,17 @@ void ARoguePlayerCharacter::AttackTeleportTimerElapsed()
 	MoveIgnoreActorAdd(NewProjectile);
 }
 
-// Called every frame
-void ARoguePlayerCharacter::Tick(float DeltaTime)
+float ARoguePlayerCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
+	class AController* EventInstigator, AActor* DamageCauser)
 {
-	Super::Tick(DeltaTime);
+	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser); 
+	
+	ActionSystemComponent->ApplyHealthChange(-ActualDamage);
+	
+	return ActualDamage;
 }
+
+
 
 
 

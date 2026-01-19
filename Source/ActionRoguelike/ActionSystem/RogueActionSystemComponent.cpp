@@ -17,11 +17,17 @@ URogueActionSystemComponent::URogueActionSystemComponent()
 void URogueActionSystemComponent::ApplyHealthChange(float healthChange)
 {
 	float OldHealth = Attributes.Health;
-	Attributes.Health += healthChange;
+	float MaxHealth = GetDefault<URogueActionSystemComponent>()->Attributes.Health;
 	
-	OnHealthChanged.Broadcast(Attributes.Health, OldHealth);
+	Attributes.Health = FMath::Clamp(Attributes.Health += healthChange, 0.f, MaxHealth);
 	
-	UE_LOG(LogTemp, Log, TEXT("New Health: %f"), Attributes.Health);
+	if (!FMath::IsNearlyEqual(OldHealth, Attributes.Health))
+	{
+		OnHealthChanged.Broadcast(Attributes.Health, OldHealth);	
+	}
+	
+	
+	UE_LOG(LogTemp, Log, TEXT("New Health: %f of %f"), Attributes.Health, MaxHealth);
 }
 
 
