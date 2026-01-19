@@ -3,9 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ActionSystem/RogueActionSystemComponent.h"
 #include "GameFramework/Character.h"
 #include "RoguePlayerCharacter.generated.h"
 
+class URogueActionSystemComponent;
 class ARogueTeleportProjectile;
 class ARogueProjectile;
 class UNiagaraSystem;
@@ -97,6 +99,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category="Components")
 	TObjectPtr<USpringArmComponent> SpringArmComponent;
 	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	TObjectPtr<URogueActionSystemComponent> ActionSystemComponent;
+	
 	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -121,4 +126,15 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 };
+
+inline float ARoguePlayerCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
+	class AController* EventInstigator, AActor* DamageCauser)
+{
+	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser); 
+	
+	ActionSystemComponent->ApplyHealthChange(-ActualDamage);
+	
+	return ActualDamage;
+}

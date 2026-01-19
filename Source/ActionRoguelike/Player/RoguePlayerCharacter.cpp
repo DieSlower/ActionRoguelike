@@ -6,6 +6,7 @@
 #include "Projectiles/RogueProjectileMagic.h"
 #include "EnhancedInputComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "ActionSystem/RogueActionSystemComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -22,6 +23,8 @@ ARoguePlayerCharacter::ARoguePlayerCharacter()
 	
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
 	CameraComponent->SetupAttachment(SpringArmComponent);
+	
+	ActionSystemComponent = CreateDefaultSubobject<URogueActionSystemComponent>(TEXT("ActionSystemComp")); 
 	
 	MuzzleSocketName = "Muzzle_01";
 	Muzzle2SocketName = "Muzzle_02";
