@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "PickupbleObject.generated.h"
 
+class USphereComponent;
+
 UCLASS()
 class ACTIONROGUELIKE_API APickupbleObject : public AActor
 {
