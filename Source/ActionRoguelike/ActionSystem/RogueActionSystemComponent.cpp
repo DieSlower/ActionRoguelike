@@ -3,6 +3,9 @@
 
 #include "RogueActionSystemComponent.h"
 
+float defaultVal = 686868.f;
+TAutoConsoleVariable<float> CVarAddMaxHealth(TEXT("game.health.AddMaxHealth"), defaultVal, TEXT("Add Max Health to the player (Can be positive or negative)"), ECVF_Cheat);
+TAutoConsoleVariable<float> CVarAddHealth(TEXT("game.health.AddHealth"), defaultVal, TEXT("Add to player Health (Can be positive or negative)"), ECVF_Cheat);
 
 // Sets default values for this component's properties
 URogueActionSystemComponent::URogueActionSystemComponent()
@@ -14,10 +17,61 @@ URogueActionSystemComponent::URogueActionSystemComponent()
 	// ...
 }
 
+void URogueActionSystemComponent::TickComponent(float DeltaTime, enum ELevelTick TickType,
+	FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	
+	ApplyCHealthChange();
+	ApplyCMaxHealthChange();
+}
+
+void URogueActionSystemComponent::ApplyCHealthChange()
+{	
+	float healthChange = CVarAddHealth.GetValueOnGameThread();
+	if (healthChange != defaultVal)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Health Change: %f"), healthChange);
+		
+		// Find the console variable by its name
+		IConsoleVariable* CVar = IConsoleManager::Get().FindConsoleVariable(TEXT("game.health.AddHealth"));
+
+		// Check if the variable was found
+		if (CVar)
+		{
+			// Set the new value, specifying the change source (ECVF_SetByCode gives it a high priority)
+			CVar->Set(defaultVal, ECVF_SetByConsole); 
+		}
+		ApplyHealthChange(healthChange);		
+		UE_LOG(LogTemp, Log, TEXT("New Health: %f of %f"), Attributes.Health, Attributes.MaxHealth);
+	}	
+}
+
+void URogueActionSystemComponent::ApplyCMaxHealthChange()
+{
+	float healthChange = CVarAddMaxHealth.GetValueOnGameThread();
+	if (healthChange != defaultVal)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Max Health Change: %f"), healthChange);
+		
+		// Find the console variable by its name
+		IConsoleVariable* CVar = IConsoleManager::Get().FindConsoleVariable(TEXT("game.health.AddMaxHealth"));
+
+		// Check if the variable was found
+		if (CVar)
+		{
+			// Set the new value, specifying the change source (ECVF_SetByCode gives it a high priority)
+			CVar->Set(defaultVal, ECVF_SetByConsole); 
+		}
+		ApplyMaxHealthChange(healthChange);		
+		UE_LOG(LogTemp, Log, TEXT("New Max Health: %f of %f"), Attributes.Health, Attributes.MaxHealth);
+	}
+}
+
 void URogueActionSystemComponent::ApplyHealthChange(float healthChange)
 {
 	float OldHealth = Attributes.Health;
-	float MaxHealth = GetDefault<URogueActionSystemComponent>()->Attributes.Health;
+	float MaxHealth = Attributes.MaxHealth;
 	
 	Attributes.Health = FMath::Clamp(Attributes.Health += healthChange, 0.f, MaxHealth);
 	
@@ -25,9 +79,23 @@ void URogueActionSystemComponent::ApplyHealthChange(float healthChange)
 	{
 		OnHealthChanged.Broadcast(Attributes.Health, OldHealth);	
 	}
-	
-	
+		
 	UE_LOG(LogTemp, Log, TEXT("New Health: %f of %f"), Attributes.Health, MaxHealth);
+}
+
+void URogueActionSystemComponent::ApplyMaxHealthChange(float maxHealthChange)
+{
+	float OldMaxHealth = Attributes.MaxHealth;
+	float NewMaxHealth = Attributes.MaxHealth += maxHealthChange;
+	
+	Attributes.MaxHealth = NewMaxHealth;
+	
+	if (!FMath::IsNearlyEqual(OldMaxHealth, Attributes.MaxHealth))
+	{
+		OnMaxHealthChanged.Broadcast(Attributes.MaxHealth, OldMaxHealth);	
+	}
+		
+	UE_LOG(LogTemp, Log, TEXT("New Max Health: %f from %f"), Attributes.MaxHealth, OldMaxHealth);
 }
 
 

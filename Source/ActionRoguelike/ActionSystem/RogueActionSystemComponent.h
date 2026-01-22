@@ -12,13 +12,17 @@ struct FRogueAttributeSet
 	GENERATED_BODY()
 	
 	FRogueAttributeSet()
-		: Health(100) {}
+		: MaxHealth(100), Health(MaxHealth) {}
+	
+	UPROPERTY(BlueprintReadOnly)
+	float MaxHealth;
 	
 	UPROPERTY(BlueprintReadOnly)
 	float Health;
 };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHealthChanged, float, NewHelth, float, OldHealth);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHealthChanged, float, NewHealth, float, OldHealth);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnMaxHealthChanged, float, NewMaxHealth, float, OldMaxHealth);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class ACTIONROGUELIKE_API URogueActionSystemComponent : public UActorComponent
@@ -33,8 +37,17 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnHealthChanged OnHealthChanged;
 	
+	UPROPERTY(BlueprintAssignable)
+	FOnMaxHealthChanged OnMaxHealthChanged;
+
 	// Sets default values for this component's properties
 	URogueActionSystemComponent();
 
+	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction);
+
+	void ApplyCHealthChange();
+	void ApplyCMaxHealthChange();
+	
 	void ApplyHealthChange(float healthChange);
+	void ApplyMaxHealthChange(float maxHealthChange);
 };
