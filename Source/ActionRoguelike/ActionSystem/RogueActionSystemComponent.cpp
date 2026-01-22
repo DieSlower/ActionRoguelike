@@ -22,6 +22,7 @@ void URogueActionSystemComponent::TickComponent(float DeltaTime, enum ELevelTick
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
+	// These could be run by a timer 1x per second
 	ApplyCHealthChange();
 	ApplyCMaxHealthChange();
 }
