@@ -22,7 +22,7 @@ void URogueActionSystemComponent::TickComponent(float DeltaTime, enum ELevelTick
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
-	// These could be run by a timer 1x per second
+	// These should be run by a timer 1x per second, not in Tick()
 	ApplyCHealthChange();
 	ApplyCMaxHealthChange();
 }
@@ -97,6 +97,16 @@ void URogueActionSystemComponent::ApplyMaxHealthChange(float maxHealthChange)
 	}
 		
 	UE_LOG(LogTemp, Log, TEXT("New Max Health: %f from %f"), Attributes.MaxHealth, OldMaxHealth);
+}
+
+float URogueActionSystemComponent::GetMaxHealth()
+{
+	return Attributes.MaxHealth;
+}
+
+float URogueActionSystemComponent::GetHealth()
+{
+	return Attributes.Health;
 }
 
 
