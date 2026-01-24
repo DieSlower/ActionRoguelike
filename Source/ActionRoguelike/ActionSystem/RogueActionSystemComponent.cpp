@@ -109,5 +109,17 @@ float URogueActionSystemComponent::GetHealth()
 	return Attributes.Health;
 }
 
+bool URogueActionSystemComponent::IsFullHealth()
+{
+	if (FMath::IsNearlyEqual(Attributes.Health,  Attributes.MaxHealth))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 
 

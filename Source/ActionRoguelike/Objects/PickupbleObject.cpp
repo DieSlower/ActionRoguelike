@@ -19,8 +19,8 @@ APickupbleObject::APickupbleObject()
 	SphereComponent->SetCollisionProfileName("PickupbleObject");
 	
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
+	MeshComponent->SetCollisionProfileName("NoCollision");
 	MeshComponent->SetupAttachment((SphereComponent));
-	MeshComponent->SetCollisionProfileName("PickupbleObject");
 }
 
 void APickupbleObject::PostInitializeComponents()

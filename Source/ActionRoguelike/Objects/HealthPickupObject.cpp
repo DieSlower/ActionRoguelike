@@ -4,7 +4,6 @@
 #include "HealthPickupObject.h"
 
 #include "ActionSystem/RogueActionSystemComponent.h"
-#include "Kismet/GameplayStatics.h"
 #include "Player/RoguePlayerCharacter.h"
 
 
@@ -21,10 +20,12 @@ void AHealthPickupObject::OnComponentBeginOverlap(UPrimitiveComponent* Overlappe
 	ARoguePlayerCharacter* Player = CastChecked<ARoguePlayerCharacter>(OtherActor);
 	URogueActionSystemComponent* ActionComp = Player->FindComponentByClass<URogueActionSystemComponent>();
 	
-	if (ActionComp->GetMaxHealth() > ActionComp->GetHealth())
+	//Assert if ActionComp is null. All pawns should have an action component
+	//Skip pickup if the health is full
+	if (ensure(ActionComp != nullptr) && !ActionComp->IsFullHealth())
 	{
 		Super::OnComponentBeginOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
-		UGameplayStatics::ApplyDamage(OtherActor, -100.f, GetInstigatorController(), this, HealthClass);	
+		ActionComp->ApplyHealthChange(HealAmount);
 		Destroy();
 	}
 }
