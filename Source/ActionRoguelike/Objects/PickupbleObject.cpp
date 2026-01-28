@@ -17,6 +17,7 @@ APickupbleObject::APickupbleObject()
 	RootComponent = SphereComponent;
 	SphereComponent->SetSphereRadius(100.f);
 	SphereComponent->SetCollisionProfileName("PickupbleObject");
+	SphereComponent->SetCanEverAffectNavigation(true);
 	
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 	MeshComponent->SetCollisionProfileName("NoCollision");

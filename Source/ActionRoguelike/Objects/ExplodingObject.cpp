@@ -25,6 +25,7 @@ AExplodingObject::AExplodingObject()
 	RootComponent = MeshComponent;
 	MeshComponent->SetCollisionProfileName("PhysicsActor");
 	MeshComponent->SetSimulatePhysics(true);
+	MeshComponent->SetCanEverAffectNavigation(false);
 
 	ExplosionForceComponent = CreateDefaultSubobject<URadialForceComponent>(TEXT("ExplosionForceComp"));
 	ExplosionForceComponent->SetupAttachment((MeshComponent));
@@ -33,6 +34,8 @@ AExplodingObject::AExplodingObject()
 	ExplosionForceComponent->ImpulseStrength=50000;
 	ExplosionForceComponent->Radius=100000;
 	ExplosionForceComponent->DestructibleDamage = 100;
+	
+	
 }
 
 void AExplodingObject::Explode()
