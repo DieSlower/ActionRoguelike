@@ -17,7 +17,8 @@ AHealthPickupObject::AHealthPickupObject()
 void AHealthPickupObject::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	ARoguePlayerCharacter* Player = CastChecked<ARoguePlayerCharacter>(OtherActor);
+	ARoguePlayerCharacter* Player = Cast<ARoguePlayerCharacter>(OtherActor);
+	check(Player);
 	URogueActionSystemComponent* ActionComp = Player->FindComponentByClass<URogueActionSystemComponent>();
 	
 	//Assert if ActionComp is null. All pawns should have an action component
