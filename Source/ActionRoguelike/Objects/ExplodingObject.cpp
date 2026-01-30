@@ -71,6 +71,8 @@ float AExplodingObject::TakeDamage(float DamageAmount, struct FDamageEvent const
 		const FPointDamageEvent* pointDamageEvent = static_cast<const FPointDamageEvent*>(&DamageEvent);
 		UNiagaraFunctionLibrary::SpawnSystemAttached(FireAnimation, MeshComponent, "FireLocation",
 													 pointDamageEvent->HitInfo.ImpactPoint, FRotator::ZeroRotator, EAttachLocation::Type::KeepWorldPosition, true );
+		
+		DrawDebugString(GetWorld(), pointDamageEvent->HitInfo.ImpactPoint, *FString(TEXT("Objecty Hit")), nullptr, FColor::Emerald, 30.f, true);
 	}
 			
 	if (mTotalDamage >= 30.0f && !mDeathTimerSet)
@@ -81,6 +83,8 @@ float AExplodingObject::TakeDamage(float DamageAmount, struct FDamageEvent const
 		FString TheFloatStr = FString::SanitizeFloat(mTotalDamage);
 		GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Yellow, "Damage: " + TheFloatStr);
 		GEngine->AddOnScreenDebugMessage(-1, 60.0f, FColor::Yellow, "Exploding....");
+		
+		
 	}
 	
 	return ActualDamage;

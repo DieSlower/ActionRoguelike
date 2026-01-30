@@ -18,16 +18,18 @@ void AHealthPickupObject::OnComponentBeginOverlap(UPrimitiveComponent* Overlappe
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	ARoguePlayerCharacter* Player = Cast<ARoguePlayerCharacter>(OtherActor);
-	check(Player);
-	URogueActionSystemComponent* ActionComp = Player->FindComponentByClass<URogueActionSystemComponent>();
-	
-	//Assert if ActionComp is null. All pawns should have an action component
-	//Skip pickup if the health is full
-	if (ensure(ActionComp != nullptr) && !ActionComp->IsFullHealth())
+	if (ensure(Player))
 	{
-		Super::OnComponentBeginOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
-		ActionComp->ApplyHealthChange(HealAmount);
-		Destroy();
+		URogueActionSystemComponent* ActionComp = Player->FindComponentByClass<URogueActionSystemComponent>();
+	
+		//Assert if ActionComp is null. All pawns should have an action component
+		//Skip pickup if the health is full
+		if (ensure(ActionComp != nullptr) && !ActionComp->IsFullHealth())
+		{
+			Super::OnComponentBeginOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
+			ActionComp->ApplyHealthChange(HealAmount);
+			Destroy();
+		}
 	}
 }
 
