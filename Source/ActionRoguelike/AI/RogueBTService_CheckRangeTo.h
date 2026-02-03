@@ -24,5 +24,8 @@ class ACTIONROGUELIKE_API URogueBTService_CheckRangeTo : public UBTService
 	UPROPERTY(EditAnywhere, Category="AI")
 	float MaxAttackRange = 500;
 	
+	URogueBTService_CheckRangeTo();
+	
+	
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 };

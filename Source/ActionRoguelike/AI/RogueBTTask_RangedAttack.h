@@ -28,4 +28,7 @@ class ACTIONROGUELIKE_API URogueBTTask_RangedAttack : public UBTTaskNode
 	TSubclassOf<ARogueProjectile> ProjectileClass;
 	
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+	
+	URogueBTTask_RangedAttack();
+	
 };
