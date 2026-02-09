@@ -17,10 +17,10 @@ AHealthPickupObject::AHealthPickupObject()
 void AHealthPickupObject::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	ARoguePlayerCharacter* Player = Cast<ARoguePlayerCharacter>(OtherActor);
-	if (ensure(Player))
+	ACharacter* Charactor = Cast<ACharacter>(OtherActor);
+	if (ensure(Charactor))
 	{
-		URogueActionSystemComponent* ActionComp = Player->FindComponentByClass<URogueActionSystemComponent>();
+		URogueActionSystemComponent* ActionComp = Charactor->FindComponentByClass<URogueActionSystemComponent>();
 	
 		//Assert if ActionComp is null. All pawns should have an action component
 		//Skip pickup if the health is full

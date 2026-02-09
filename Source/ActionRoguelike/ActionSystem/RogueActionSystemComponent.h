@@ -55,8 +55,8 @@ public:
 	void ApplyHealthChange(float healthChange);
 	void ApplyMaxHealthChange(float maxHealthChange);
 	
-	float GetMaxHealth();
-	float GetHealth();
-	bool IsFullHealth();
-	bool IsHealthy();
+	float GetMaxHealth() const;
+	float GetHealth() const;
+	bool IsFullHealth() const;
+	bool IsHealthy() const;
 };

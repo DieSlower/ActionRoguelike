@@ -99,17 +99,17 @@ void URogueActionSystemComponent::ApplyMaxHealthChange(float maxHealthChange)
 	UE_LOG(LogTemp, Log, TEXT("New Max Health: %f from %f"), Attributes.MaxHealth, OldMaxHealth);
 }
 
-float URogueActionSystemComponent::GetMaxHealth()
+float URogueActionSystemComponent::GetMaxHealth() const
 {
 	return Attributes.MaxHealth;
 }
 
-float URogueActionSystemComponent::GetHealth()
+float URogueActionSystemComponent::GetHealth() const
 {
 	return Attributes.Health;
 }
 
-bool URogueActionSystemComponent::IsFullHealth()
+bool URogueActionSystemComponent::IsFullHealth() const
 {
 	if (FMath::IsNearlyEqual(Attributes.Health,  Attributes.MaxHealth))
 	{
@@ -121,7 +121,7 @@ bool URogueActionSystemComponent::IsFullHealth()
 	}
 }
 
-bool URogueActionSystemComponent::IsHealthy()
+bool URogueActionSystemComponent::IsHealthy() const
 {
 	if (Attributes.Health > HealthyLimit)
 	{
