@@ -34,6 +34,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category="Attributes")
 	FRogueAttributeSet Attributes;
 	
+	UPROPERTY(BlueprintReadOnly, Category="Health")
+	float HealthyLimit = 30;
+	
 public:
 	UPROPERTY(BlueprintAssignable)
 	FOnHealthChanged OnHealthChanged;
@@ -55,4 +58,5 @@ public:
 	float GetMaxHealth();
 	float GetHealth();
 	bool IsFullHealth();
+	bool IsHealthy();
 };

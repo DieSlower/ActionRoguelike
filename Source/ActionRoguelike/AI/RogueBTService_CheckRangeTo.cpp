@@ -9,7 +9,7 @@
 
 URogueBTService_CheckRangeTo::URogueBTService_CheckRangeTo()
 {
-TargetActorKey.SelectedKeyName = NAME_TargetActor;	
+	TargetActorKey.SelectedKeyName = NAME_TargetActor;	
 }
 
 void URogueBTService_CheckRangeTo::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)

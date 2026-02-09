@@ -121,5 +121,17 @@ bool URogueActionSystemComponent::IsFullHealth()
 	}
 }
 
+bool URogueActionSystemComponent::IsHealthy()
+{
+	if (Attributes.Health > HealthyLimit)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 
 
