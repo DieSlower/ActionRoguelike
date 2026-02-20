@@ -8,10 +8,6 @@
 #include "RoguePlayerCharacter.generated.h"
 
 class URogueActionSystemComponent;
-class ARogueTeleportProjectile;
-class ARogueProjectile;
-class UNiagaraSystem;
-class ARogueProjectileMagic;
 struct FInputActionInstance;
 struct FInputActionValue;
 class UInputAction;
@@ -32,52 +28,7 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, Category="Death")
 	TObjectPtr<UAnimMontage> DeathMontoge;
-	
-	UPROPERTY(EditDefaultsOnly, Category="PrimaryAttack")
-	TSubclassOf<ARogueProjectile> ProjectileClass;
-	
-	UPROPERTY(EditDefaultsOnly, Category="PrimaryAttack")
-	TObjectPtr<UNiagaraSystem> CastingEffect;
-	
-	UPROPERTY(EditDefaultsOnly, Category="PrimaryAttack")
-	TObjectPtr<USoundBase> CastingSound;
-	
-	UPROPERTY(VisibleAnywhere, Category="PrimaryAttack")
-	FName MuzzleSocketName;
-	
-	UPROPERTY(EditDefaultsOnly, Category="PrimaryAttack")
-	TObjectPtr<UAnimMontage> AttackMontoge;
-	
-	UPROPERTY(EditDefaultsOnly, Category="SecondaryAttack")
-	TObjectPtr<UNiagaraSystem> Casting2Effect;
-	
-	UPROPERTY(EditDefaultsOnly, Category="SecondaryAttack")
-	TObjectPtr<USoundBase> Casting2Sound;
-	
-	UPROPERTY(EditDefaultsOnly, Category="SecondaryAttack")
-	TSubclassOf<ARogueProjectile> Projectile2Class;
-	
-	UPROPERTY(VisibleAnywhere, Category="SecondaryAttack")
-	FName Muzzle2SocketName;
-	
-	UPROPERTY(EditDefaultsOnly, Category="SecondaryAttack")
-	TObjectPtr<UAnimMontage> Attack2Montoge;
-	
-	UPROPERTY(EditDefaultsOnly, Category="TeleportAttack")
-	TSubclassOf<ARogueProjectile> ProjectileTeleportClass;
-	
-	UPROPERTY(EditDefaultsOnly, Category="TeleportAttack")
-	TObjectPtr<UNiagaraSystem> CastingTeleportEffect;
-	
-	UPROPERTY(EditDefaultsOnly, Category="TeleportAttack")
-	TObjectPtr<USoundBase> CastingTeleportSound;
-	
-	UPROPERTY(VisibleAnywhere, Category="TeleportAttack")
-	FName MuzzleTeleportSocketName;
-	
-	UPROPERTY(EditDefaultsOnly, Category="TeleportAttack")
-	TObjectPtr<UAnimMontage> AttackTeleportMontoge;
-	
+		
 	UPROPERTY(EditDefaultsOnly, Category="Input")
 	TObjectPtr<UInputAction> Input_Move;
 	
@@ -114,16 +65,7 @@ protected:
 	//void JumpAction();
 
 	void StartAction(FName InActionName);
-	
-	void PrimaryAttack();
-	void SecondaryAttack();
-	void SpecialAttack();
-	
-	void AttackTimerElapsed();
-	void Attack2TimerElapsed();
-	void AttackTeleportTimerElapsed();
-	
-	
+
 public:	
 	virtual void PostInitializeComponents() override;
 

@@ -42,6 +42,9 @@ protected:
 	UPROPERTY()
 	TArray<TObjectPtr<URogueAction>> Actions;
 	
+	UPROPERTY(EditAnywhere)
+	TArray<TSubclassOf<URogueAction>> DefaultActions;
+	
 public:
 	UPROPERTY(BlueprintAssignable)
 	FOnHealthChanged OnHealthChanged;
@@ -53,6 +56,8 @@ public:
 	URogueActionSystemComponent();
 
 	virtual void InitializeComponent();
+	
+	void GrantAction(TSubclassOf<URogueAction> NewActionClass);
 	
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction);
 
