@@ -3,6 +3,8 @@
 
 #include "RogueActionSystemComponent.h"
 
+#include "RogueAction.h"
+
 float defaultVal = 686868.f;
 TAutoConsoleVariable<float> CVarAddMaxHealth(TEXT("game.health.AddMaxHealth"), defaultVal, TEXT("Add Max Health to the player (Can be positive or negative)"), ECVF_Cheat);
 TAutoConsoleVariable<float> CVarAddHealth(TEXT("game.health.AddHealth"), defaultVal, TEXT("Add to player Health (Can be positive or negative)"), ECVF_Cheat);
@@ -14,17 +16,40 @@ URogueActionSystemComponent::URogueActionSystemComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
+	bWantsInitializeComponent = true;
 	// ...
 }
 
+void URogueActionSystemComponent::InitializeComponent()
+{
+	Super::InitializeComponent();
+	
+	URogueAction* NewAction = NewObject<URogueAction>(this, URogueAction::StaticClass());
+	Actions.Add(NewAction);
+}
+
 void URogueActionSystemComponent::TickComponent(float DeltaTime, enum ELevelTick TickType,
-	FActorComponentTickFunction* ThisTickFunction)
+                                                FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
 	// These should be run by a timer 1x per second, not in Tick()
 	ApplyCHealthChange();
 	ApplyCMaxHealthChange();
+}
+
+void URogueActionSystemComponent::StartAction(FName InActionName)
+{
+	for (URogueAction* Action : Actions)
+	{
+		if(Action->GetActionName() == InActionName)
+		{
+			Action->StartAction();
+			return;
+		}
+		
+		UE_LOG(LogTemp, Warning, TEXT("Action Name: %s Not Found!"), *InActionName.ToString());
+	}
 }
 
 void URogueActionSystemComponent::ApplyCHealthChange()

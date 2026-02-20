@@ -55,7 +55,9 @@ void ARoguePlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 	
 	EnhancedInput->BindAction(Input_JumpAction, ETriggerEvent::Triggered, this, &ARoguePlayerCharacter::Jump);
 	
-	EnhancedInput->BindAction(Input_PrimaryAttack, ETriggerEvent::Triggered, this, &ARoguePlayerCharacter::PrimaryAttack);
+	EnhancedInput->BindAction(Input_PrimaryAttack, ETriggerEvent::Triggered, this, &ARoguePlayerCharacter::StartAction, FName("PrimaryAttack"));
+	
+	
 	EnhancedInput->BindAction(Input_SecondaryAttack, ETriggerEvent::Triggered, this, &ARoguePlayerCharacter::SecondaryAttack);
 	EnhancedInput->BindAction(Input_TeleportAttack, ETriggerEvent::Triggered, this, &ARoguePlayerCharacter::SpecialAttack);
 }
@@ -94,6 +96,11 @@ void ARoguePlayerCharacter::OnHealthChanged(float NewHealth, float OldHealth)
 		
 		PlayAnimMontage(DeathMontoge);
 	}
+}
+
+void ARoguePlayerCharacter::StartAction(FName InActionName)
+{
+	ActionSystemComponent->StartAction(InActionName);
 }
 
 void ARoguePlayerCharacter::PrimaryAttack()

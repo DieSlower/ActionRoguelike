@@ -113,6 +113,8 @@ protected:
 	
 	//void JumpAction();
 
+	void StartAction(FName InActionName);
+	
 	void PrimaryAttack();
 	void SecondaryAttack();
 	void SpecialAttack();

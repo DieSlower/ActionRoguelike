@@ -6,6 +6,8 @@
 #include "Components/ActorComponent.h"
 #include "RogueActionSystemComponent.generated.h"
 
+class URogueAction;
+
 USTRUCT(Blueprintable)
 struct FRogueAttributeSet
 {
@@ -37,6 +39,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category="Health")
 	float HealthyLimit = 30;
 	
+	UPROPERTY()
+	TArray<TObjectPtr<URogueAction>> Actions;
+	
 public:
 	UPROPERTY(BlueprintAssignable)
 	FOnHealthChanged OnHealthChanged;
@@ -47,8 +52,12 @@ public:
 	// Sets default values for this component's properties
 	URogueActionSystemComponent();
 
+	virtual void InitializeComponent();
+	
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction);
 
+	void StartAction(FName InActionName);
+	
 	void ApplyCHealthChange();
 	void ApplyCMaxHealthChange();
 	
