@@ -58,9 +58,8 @@ void URogueActionSystemComponent::StartAction(FName InActionName)
 			Action->StartAction();
 			return;
 		}
-		
-		UE_LOG(LogTemp, Warning, TEXT("Action Name: %s Not Found!"), *InActionName.ToString());
 	}
+	UE_LOG(LogTemp, Warning, TEXT("Action Name: %s Not Found!"), *InActionName.ToString());
 }
 
 void URogueActionSystemComponent::ApplyCHealthChange()

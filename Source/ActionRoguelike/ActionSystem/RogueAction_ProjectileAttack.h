@@ -33,7 +33,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category="ProjectileAttack")
 	TObjectPtr<USoundBase> CastingSound;
 	
-	UPROPERTY(VisibleAnywhere, Category="ProjectileAttack")
+	UPROPERTY(EditDefaultsOnly, Category="ProjectileAttack")
 	FName MuzzleSocketName;
 	
 	UPROPERTY(EditDefaultsOnly, Category="ProjectileAttack")
