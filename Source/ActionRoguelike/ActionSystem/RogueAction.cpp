@@ -7,6 +7,8 @@
 
 void URogueAction::StartAction_Implementation()
 {
+	bIsRunning = true;
+	
 	float GameTime = GetWorld()->GetTimeSeconds();
 	
 	UE_LOGFMT(LogTemp, Log, "Started Action {ActionName} - {WorldTime}", 
@@ -16,14 +18,39 @@ void URogueAction::StartAction_Implementation()
 
 void URogueAction::StopAction_Implementation()
 {
+	bIsRunning = false;
+	
 	float GameTime = GetWorld()->GetTimeSeconds();
 	
 	UE_LOGFMT(LogTemp, Log, "Stopped Action {ActionName} - {WorldTime}", 
 		("ActionName", ActionName), 
 		("WorldTime", GameTime));
+	
+	CooldownUntil = GetWorld()->GetTimeSeconds() + CooldownTime;
+}
+
+bool URogueAction::CanStart() const
+{
+	if (IsRunning())
+	{
+		return false;
+	}
+	
+	if (GetCooldownTimeRemaining() > 0.0f)
+	{
+		UE_LOGFMT(LogTemp, Log, "Cooldown Remaining {Time}", GetCooldownTimeRemaining());
+		return false;
+	}
+	
+	return true;
 }
 
 URogueActionSystemComponent* URogueAction::GetOwningComponent() const
 {
 	return Cast<URogueActionSystemComponent>(GetOuter());
+}
+
+float URogueAction::GetCooldownTimeRemaining() const
+{
+	return FMath::Max(0.0f, CooldownUntil - GetWorld()->GetTimeSeconds());
 }
