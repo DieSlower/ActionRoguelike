@@ -62,6 +62,7 @@ public:
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction);
 
 	void StartAction(FName InActionName);
+	void StopAction(FName InActionName);
 	
 	void ApplyCHealthChange();
 	void ApplyCMaxHealthChange();

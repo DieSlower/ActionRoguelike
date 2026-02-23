@@ -19,7 +19,7 @@ class ACTIONROGUELIKE_API URogueAction_ProjectileAttack : public URogueAction
 public:
 	URogueAction_ProjectileAttack();
 	
-	virtual void StartAction() override;
+	virtual void StartAction_Implementation() override;
 	
 	void AttackTimerElapsed();
 	

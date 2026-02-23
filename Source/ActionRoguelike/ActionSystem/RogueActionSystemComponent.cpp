@@ -39,8 +39,7 @@ void URogueActionSystemComponent::GrantAction(TSubclassOf<URogueAction> NewActio
  	Actions.Add(NewAction);
 }
 
-void URogueActionSystemComponent::TickComponent(float DeltaTime, enum ELevelTick TickType,
-                                                FActorComponentTickFunction* ThisTickFunction)
+void URogueActionSystemComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
@@ -56,6 +55,19 @@ void URogueActionSystemComponent::StartAction(FName InActionName)
 		if(Action->GetActionName() == InActionName)
 		{
 			Action->StartAction();
+			return;
+		}
+	}
+	UE_LOG(LogTemp, Warning, TEXT("Action Name: %s Not Found!"), *InActionName.ToString());
+}
+
+void URogueActionSystemComponent::StopAction(FName InActionName)
+{
+	for (URogueAction* Action : Actions)
+	{
+		if(Action->GetActionName() == InActionName)
+		{
+			Action->StopAction();
 			return;
 		}
 	}

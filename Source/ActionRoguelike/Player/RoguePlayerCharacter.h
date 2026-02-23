@@ -39,6 +39,9 @@ protected:
 	TObjectPtr<UInputAction> Input_JumpAction;
 	
 	UPROPERTY(EditDefaultsOnly, Category="Input")
+	TObjectPtr<UInputAction> Input_SprintAction;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Input")
 	TObjectPtr<UInputAction> Input_PrimaryAttack;
 	
 	UPROPERTY(EditDefaultsOnly, Category="Input")
@@ -65,6 +68,7 @@ protected:
 	//void JumpAction();
 
 	void StartAction(FName InActionName);
+	void StopAction(FName InActionName);
 
 public:	
 	virtual void PostInitializeComponents() override;

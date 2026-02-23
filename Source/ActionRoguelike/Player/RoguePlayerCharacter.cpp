@@ -45,6 +45,9 @@ void ARoguePlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 	
 	EnhancedInput->BindAction(Input_JumpAction, ETriggerEvent::Triggered, this, &ThisClass::Jump);
 	
+	EnhancedInput->BindAction(Input_SprintAction, ETriggerEvent::Started, this, &ThisClass::StartAction, FName("Sprint"));
+	EnhancedInput->BindAction(Input_SprintAction, ETriggerEvent::Completed, this, &ThisClass::StopAction, FName("Sprint"));
+		
 	EnhancedInput->BindAction(Input_PrimaryAttack, ETriggerEvent::Triggered, this, &ThisClass::StartAction, FName("PrimaryAttack"));
 	EnhancedInput->BindAction(Input_SecondaryAttack, ETriggerEvent::Triggered, this, &ThisClass::StartAction, FName("SecondaryAttack"));
 	EnhancedInput->BindAction(Input_TeleportAttack, ETriggerEvent::Triggered, this, &ThisClass::StartAction, FName("SpecialAttack"));
@@ -91,9 +94,14 @@ void ARoguePlayerCharacter::StartAction(FName InActionName)
 	ActionSystemComponent->StartAction(InActionName);
 }
 
+void ARoguePlayerCharacter::StopAction(FName InActionName)
+{
+	ActionSystemComponent->StopAction(InActionName);
+}
+
 
 float ARoguePlayerCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
-	class AController* EventInstigator, AActor* DamageCauser)
+                                        class AController* EventInstigator, AActor* DamageCauser)
 {
 	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser); 
 	

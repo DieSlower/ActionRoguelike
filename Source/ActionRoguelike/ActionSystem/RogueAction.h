@@ -22,8 +22,13 @@ protected:
 	
 public:
 	
-	virtual void StartAction();
+	UFUNCTION(BlueprintNativeEvent, Category = "Actions")
+	void StartAction();
 	
+	UFUNCTION(BlueprintNativeEvent, Category = "Actions")
+	void StopAction();
+	
+	UFUNCTION(BlueprintCallable, Category = "Actions")
 	URogueActionSystemComponent* GetOwningComponent() const;
 	
 	FName GetActionName() const { return ActionName; }
