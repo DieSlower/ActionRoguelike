@@ -4,26 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
+#include "RogueAttributeSet.h"
 #include "Components/ActorComponent.h"
 #include "RogueActionSystemComponent.generated.h"
 
 class URogueAction;
-
-USTRUCT(Blueprintable)
-struct FRogueAttributeSet
-{
-	GENERATED_BODY()
-	
-	FRogueAttributeSet(): 
-	MaxHealth(100), 
-	Health(MaxHealth) {}
-	
-	UPROPERTY(BlueprintReadOnly)
-	float MaxHealth;
-	
-	UPROPERTY(BlueprintReadOnly)
-	float Health;
-};
+class URogueAttributeSet;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHealthChanged, float, NewHealth, float, OldHealth);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnMaxHealthChanged, float, NewMaxHealth, float, OldMaxHealth);
@@ -34,8 +20,14 @@ class ACTIONROGUELIKE_API URogueActionSystemComponent : public UActorComponent
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(BlueprintReadOnly, Category="Attributes")
-	FRogueAttributeSet Attributes;
+	
+	UPROPERTY()
+	TObjectPtr<URogueAttributeSet> Attributes;
+	
+	TMap<FGameplayTag, FRogueAttribute*> CachedAttributes;
+	
+	UPROPERTY(EditAnywhere, Category="Attributes", NoClear)
+	TSubclassOf<URogueAttributeSet> AttributeSetClass;
 	
 	UPROPERTY(BlueprintReadOnly, Category="Health")
 	float HealthyLimit = 30;
@@ -75,6 +67,9 @@ public:
 	
 	float GetMaxHealth() const;
 	float GetHealth() const;
+	
+	FRogueAttribute* GetAttribute(FGameplayTag InAttributeTag) const;
+	
 	bool IsFullHealth() const;
 	bool IsHealthy() const;
 };

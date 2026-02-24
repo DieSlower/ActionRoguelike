@@ -4,6 +4,7 @@
 #include "RogueActionSystemComponent.h"
 
 #include "RogueAction.h"
+#include "RogueAttributeSet.h"
 
 float defaultVal = 686868.f;
 TAutoConsoleVariable<float> CVarAddMaxHealth(TEXT("game.health.AddMaxHealth"), defaultVal, TEXT("Add Max Health to the player (Can be positive or negative)"), ECVF_Cheat);
@@ -12,18 +13,17 @@ TAutoConsoleVariable<float> CVarAddHealth(TEXT("game.health.AddHealth"), default
 // Sets default values for this component's properties
 URogueActionSystemComponent::URogueActionSystemComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
-
 	bWantsInitializeComponent = true;
-	// ...
+
+	AttributeSetClass = URogueAttributeSet::StaticClass();
 }
 
 void URogueActionSystemComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
 
+	Attributes = NewObject<URogueAttributeSet>(this, AttributeSetClass);
+	
 	for (TSubclassOf<URogueAction> ActionClass : DefaultActions)
 	{
 		if (ensure(ActionClass))
@@ -94,7 +94,7 @@ void URogueActionSystemComponent::ApplyCHealthChange()
 			CVar->Set(defaultVal, ECVF_SetByConsole); 
 		}
 		ApplyHealthChange(healthChange);		
-		UE_LOG(LogTemp, Log, TEXT("New Health: %f of %f"), Attributes.Health, Attributes.MaxHealth);
+		//UE_LOG(LogTemp, Log, TEXT("New Health: %f of %f"), Attributes.Health, Attributes.MaxHealth);
 	}	
 }
 
@@ -115,13 +115,13 @@ void URogueActionSystemComponent::ApplyCMaxHealthChange()
 			CVar->Set(defaultVal, ECVF_SetByConsole); 
 		}
 		ApplyMaxHealthChange(healthChange);		
-		UE_LOG(LogTemp, Log, TEXT("New Max Health: %f of %f"), Attributes.Health, Attributes.MaxHealth);
+		//UE_LOG(LogTemp, Log, TEXT("New Max Health: %f of %f"), Attributes.Health, Attributes.MaxHealth);
 	}
 }
 
 void URogueActionSystemComponent::ApplyHealthChange(float healthChange)
 {
-	float OldHealth = Attributes.Health;
+	/*float OldHealth = Attributes.Health;
 	float MaxHealth = Attributes.MaxHealth;
 	
 	Attributes.Health = FMath::Clamp(Attributes.Health += healthChange, 0.f, MaxHealth);
@@ -131,12 +131,12 @@ void URogueActionSystemComponent::ApplyHealthChange(float healthChange)
 		OnHealthChanged.Broadcast(Attributes.Health, OldHealth);	
 	}
 		
-	UE_LOG(LogTemp, Log, TEXT("New Health: %f of %f"), Attributes.Health, MaxHealth);
+	UE_LOG(LogTemp, Log, TEXT("New Health: %f of %f"), Attributes.Health, MaxHealth);*/
 }
 
 void URogueActionSystemComponent::ApplyMaxHealthChange(float maxHealthChange)
 {
-	float OldMaxHealth = Attributes.MaxHealth;
+	/*float OldMaxHealth = Attributes.MaxHealth;
 	float NewMaxHealth = Attributes.MaxHealth += maxHealthChange;
 	
 	Attributes.MaxHealth = NewMaxHealth;
@@ -146,41 +146,52 @@ void URogueActionSystemComponent::ApplyMaxHealthChange(float maxHealthChange)
 		OnMaxHealthChanged.Broadcast(Attributes.MaxHealth, OldMaxHealth);	
 	}
 		
-	UE_LOG(LogTemp, Log, TEXT("New Max Health: %f from %f"), Attributes.MaxHealth, OldMaxHealth);
+	UE_LOG(LogTemp, Log, TEXT("New Max Health: %f from %f"), Attributes.MaxHealth, OldMaxHealth);*/
 }
 
 float URogueActionSystemComponent::GetMaxHealth() const
 {
-	return Attributes.MaxHealth;
+	return 0.f; //Attributes.MaxHealth;
 }
 
 float URogueActionSystemComponent::GetHealth() const
 {
-	return Attributes.Health;
+	return 0.f; //Attributes.Health;
+}
+
+FRogueAttribute* URogueActionSystemComponent::GetAttribute(FGameplayTag InAttributeTag) const
+{
+	FRogueAttribute* FoundAttribute = *CachedAttributes.Find(InAttributeTag);
+	
+	return FoundAttribute;
 }
 
 bool URogueActionSystemComponent::IsFullHealth() const
 {
-	if (FMath::IsNearlyEqual(Attributes.Health,  Attributes.MaxHealth))
+	/*if (FMath::IsNearlyEqual(Attributes.Health,  Attributes.MaxHealth))
 	{
 		return true;
 	}
 	else
 	{
 		return false;
-	}
+	}*/
+	
+	return true;
 }
 
 bool URogueActionSystemComponent::IsHealthy() const
 {
-	if (Attributes.Health > HealthyLimit)
+	/*if (Attributes.Health > HealthyLimit)
 	{
 		return true;
 	}
 	else
 	{
 		return false;
-	}
+	}*/
+	
+	return true;
 }
 
 
