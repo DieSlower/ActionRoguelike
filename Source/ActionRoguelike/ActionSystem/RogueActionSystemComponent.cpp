@@ -48,7 +48,7 @@ void URogueActionSystemComponent::TickComponent(float DeltaTime, enum ELevelTick
 	ApplyCMaxHealthChange();
 }
 
-void URogueActionSystemComponent::StartAction(FName InActionName)
+void URogueActionSystemComponent::StartAction(FGameplayTag InActionName)
 {
 	for (URogueAction* Action : Actions)
 	{
@@ -64,7 +64,7 @@ void URogueActionSystemComponent::StartAction(FName InActionName)
 	UE_LOG(LogTemp, Warning, TEXT("Action Name: %s Not Found!"), *InActionName.ToString());
 }
 
-void URogueActionSystemComponent::StopAction(FName InActionName)
+void URogueActionSystemComponent::StopAction(FGameplayTag InActionName)
 {
 	for (URogueAction* Action : Actions)
 	{

@@ -67,8 +67,8 @@ protected:
 	
 	//void JumpAction();
 
-	void StartAction(FName InActionName);
-	void StopAction(FName InActionName);
+	void StartAction(FGameplayTag InActionName);
+	void StopAction(FGameplayTag InActionName);
 
 public:	
 	virtual void PostInitializeComponents() override;

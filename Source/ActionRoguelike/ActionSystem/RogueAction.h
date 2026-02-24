@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "UObject/Object.h"
 #include "RogueAction.generated.h"
 
@@ -16,9 +17,15 @@ class ACTIONROGUELIKE_API URogueAction : public UObject
 	GENERATED_BODY()
 
 protected:
+
+	UPROPERTY(EditDefaultsOnly, Category = "Actions")
+	FGameplayTag ActionName;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Actions")
-	FName ActionName;
+	FGameplayTagContainer GrantTags;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Actions")
+	FGameplayTagContainer BlockedTags;
 	
 	/* Game time till the action is available again */
 	UPROPERTY(Transient)
@@ -44,7 +51,7 @@ public:
 	
 	float GetCooldownTimeRemaining() const;
 	
-	FName GetActionName() const { return ActionName; }
+	FGameplayTag GetActionName() const { return ActionName; }
 	
 	bool bIsRunning = false;
 	

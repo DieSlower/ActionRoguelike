@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "Components/ActorComponent.h"
 #include "RogueActionSystemComponent.generated.h"
 
@@ -52,6 +53,8 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnMaxHealthChanged OnMaxHealthChanged;
 
+	FGameplayTagContainer ActiveGameplayTags;
+	
 	// Sets default values for this component's properties
 	URogueActionSystemComponent();
 
@@ -61,8 +64,8 @@ public:
 	
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction);
 
-	void StartAction(FName InActionName);
-	void StopAction(FName InActionName);
+	void StartAction(FGameplayTag InActionName);
+	void StopAction(FGameplayTag InActionName);
 	
 	void ApplyCHealthChange();
 	void ApplyCMaxHealthChange();
