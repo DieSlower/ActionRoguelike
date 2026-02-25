@@ -24,6 +24,17 @@ void URogueActionSystemComponent::InitializeComponent()
 
 	Attributes = NewObject<URogueAttributeSet>(this, AttributeSetClass);
 	
+	for (TFieldIterator<FStructProperty> PropIt(Attributes->GetClass()); PropIt; ++PropIt)
+	{
+		FRogueAttribute* FoundAttribute = PropIt->ContainerPtrToValuePtr<FRogueAttribute>(Attributes);
+		
+		FName AttributeTagName = FName("Attribute." + PropIt->GetName());
+		FGameplayTag AttributeTag = FGameplayTag::RequestGameplayTag(AttributeTagName);
+		
+		CachedAttributes.Add(AttributeTag, FoundAttribute);
+		UE_LOGFMT(LogTemp, Warning, "Size of Cache {Size} Name: {name}", CachedAttributes.GetMaxIndex(), AttributeTagName);
+	}
+	
 	for (TSubclassOf<URogueAction> ActionClass : DefaultActions)
 	{
 		if (ensure(ActionClass))
@@ -147,16 +158,6 @@ void URogueActionSystemComponent::ApplyMaxHealthChange(float maxHealthChange)
 	}
 		
 	UE_LOG(LogTemp, Log, TEXT("New Max Health: %f from %f"), Attributes.MaxHealth, OldMaxHealth);*/
-}
-
-float URogueActionSystemComponent::GetMaxHealth() const
-{
-	return 0.f; //Attributes.MaxHealth;
-}
-
-float URogueActionSystemComponent::GetHealth() const
-{
-	return 0.f; //Attributes.Health;
 }
 
 FRogueAttribute* URogueActionSystemComponent::GetAttribute(FGameplayTag InAttributeTag) const

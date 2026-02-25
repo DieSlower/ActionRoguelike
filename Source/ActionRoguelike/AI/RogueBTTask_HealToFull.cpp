@@ -30,7 +30,8 @@ EBTNodeResult::Type URogueBTTask_HealToFull::ExecuteTask(UBehaviorTreeComponent&
 		URogueActionSystemComponent* ActionComp = Cast<URogueActionSystemComponent>(OwnerCharacter->GetComponentByClass(URogueActionSystemComponent::StaticClass()));
 		check(ActionComp);
 		
-		ActionComp->ApplyHealthChange(ActionComp->GetMaxHealth());	
+		ensure(false);
+		//ActionComp->ApplyHealthChange(ActionComp->GetMaxHealth());	
 		
 		return EBTNodeResult::Succeeded;
 	}

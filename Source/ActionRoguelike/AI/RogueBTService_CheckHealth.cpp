@@ -35,9 +35,10 @@ void URogueBTService_CheckHealth::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 		URogueActionSystemComponent* ActionComp = Cast<URogueActionSystemComponent>(OwnerCharacter->GetComponentByClass(URogueActionSystemComponent::StaticClass()));
 		check(ActionComp);
 		
-		BBComp->SetValueAsFloat(CurrentHealthKey.SelectedKeyName, ActionComp->GetHealth());
-		BBComp->SetValueAsFloat(MaxHealthKey.SelectedKeyName, ActionComp->GetMaxHealth());
-		BBComp->SetValueAsBool(IsHealthyKey.SelectedKeyName, ActionComp->IsHealthy());
+		ensure(false);
+		//BBComp->SetValueAsFloat(CurrentHealthKey.SelectedKeyName, ActionComp->GetHealth());
+		//BBComp->SetValueAsFloat(MaxHealthKey.SelectedKeyName, ActionComp->GetMaxHealth());
+		//BBComp->SetValueAsBool(IsHealthyKey.SelectedKeyName, ActionComp->IsHealthy());
 	}
 	
 }

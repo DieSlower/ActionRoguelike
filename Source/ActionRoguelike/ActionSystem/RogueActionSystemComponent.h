@@ -65,9 +65,6 @@ public:
 	void ApplyHealthChange(float healthChange);
 	void ApplyMaxHealthChange(float maxHealthChange);
 	
-	float GetMaxHealth() const;
-	float GetHealth() const;
-	
 	FRogueAttribute* GetAttribute(FGameplayTag InAttributeTag) const;
 	
 	bool IsFullHealth() const;

@@ -13,7 +13,8 @@ bool URogueBTDecorator_IsLowHealth::CalculateRawConditionValue(UBehaviorTreeComp
 	URogueActionSystemComponent* ActionComp = Cast<URogueActionSystemComponent>(Pawn->GetComponentByClass(URogueActionSystemComponent::StaticClass()));
 	if (ensure(ActionComp))
 	{
-		return (ActionComp->GetHealth()/ActionComp->GetMaxHealth()) < LowHealthFraction;
+		ensure(false);
+		return false;//(ActionComp->GetHealth()/ActionComp->GetMaxHealth()) < LowHealthFraction;
 	}
 	
 	return false;
