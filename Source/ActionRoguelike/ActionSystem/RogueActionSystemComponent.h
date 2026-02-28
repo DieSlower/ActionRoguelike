@@ -11,6 +11,15 @@
 class URogueAction;
 class URogueAttributeSet;
 
+UENUM()
+enum EAttributeModifyType
+{
+	Base,
+	Modifier,
+	OverrideBase,
+	Invalid
+};
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHealthChanged, float, NewHealth, float, OldHealth);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnMaxHealthChanged, float, NewMaxHealth, float, OldMaxHealth);
 
@@ -62,11 +71,12 @@ public:
 	void ApplyCHealthChange();
 	void ApplyCMaxHealthChange();
 	
-	void ApplyHealthChange(float healthChange);
+	//void ApplyHealthChange(float healthChange);
 	void ApplyMaxHealthChange(float maxHealthChange);
+	
+	void ApplyAttributeChange(FGameplayTag AttributeTag, float Delta, EAttributeModifyType ModifyType);
 	
 	FRogueAttribute* GetAttribute(FGameplayTag InAttributeTag) const;
 	
-	bool IsFullHealth() const;
 	bool IsHealthy() const;
 };

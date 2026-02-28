@@ -3,7 +3,9 @@
 
 #include "HealthPickupObject.h"
 
+#include "SharedGameplayTags.h"
 #include "ActionSystem/RogueActionSystemComponent.h"
+#include "Core/RogueGameplayStatics.h"
 #include "Player/RoguePlayerCharacter.h"
 
 
@@ -24,10 +26,10 @@ void AHealthPickupObject::OnComponentBeginOverlap(UPrimitiveComponent* Overlappe
 	
 		//Assert if ActionComp is null. All pawns should have an action component
 		//Skip pickup if the health is full
-		if (ensure(ActionComp != nullptr) && !ActionComp->IsFullHealth())
+		if (ensure(ActionComp != nullptr) && !URogueGameplayStatics::IsFullHealth(ActionComp))
 		{
 			Super::OnComponentBeginOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
-			ActionComp->ApplyHealthChange(HealAmount);
+			ActionComp->ApplyAttributeChange(SharedGameplayTags::Attribute_Health, HealAmount, Base);
 			Destroy();
 		}
 	}

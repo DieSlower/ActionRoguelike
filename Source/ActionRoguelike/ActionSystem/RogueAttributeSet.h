@@ -35,13 +35,15 @@ UCLASS()
 class ACTIONROGUELIKE_API URogueAttributeSet : public UObject
 {
 	GENERATED_BODY()
+public:
+	virtual void PostAttributeChanged() {};
 };
 
 UCLASS()
 class URogueHealthAttributeSet : public URogueAttributeSet
 {
 	GENERATED_BODY()
-	\
+	
 public:
 	
 	UPROPERTY(EditAnywhere, Category = Attributes)
@@ -52,4 +54,6 @@ public:
 
 	URogueHealthAttributeSet();
 	
+	virtual void PostAttributeChanged() override;
+		
 };

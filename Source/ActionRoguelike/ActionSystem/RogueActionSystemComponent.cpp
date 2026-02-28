@@ -5,6 +5,7 @@
 
 #include "RogueAction.h"
 #include "RogueAttributeSet.h"
+#include "SharedGameplayTags.h"
 
 float defaultVal = 686868.f;
 TAutoConsoleVariable<float> CVarAddMaxHealth(TEXT("game.health.AddMaxHealth"), defaultVal, TEXT("Add Max Health to the player (Can be positive or negative)"), ECVF_Cheat);
@@ -104,7 +105,7 @@ void URogueActionSystemComponent::ApplyCHealthChange()
 			// Set the new value, specifying the change source (ECVF_SetByCode gives it a high priority)
 			CVar->Set(defaultVal, ECVF_SetByConsole); 
 		}
-		ApplyHealthChange(healthChange);		
+		ApplyAttributeChange(SharedGameplayTags::Attribute_Health, healthChange, Base);
 		//UE_LOG(LogTemp, Log, TEXT("New Health: %f of %f"), Attributes.Health, Attributes.MaxHealth);
 	}	
 }
@@ -130,21 +131,6 @@ void URogueActionSystemComponent::ApplyCMaxHealthChange()
 	}
 }
 
-void URogueActionSystemComponent::ApplyHealthChange(float healthChange)
-{
-	/*float OldHealth = Attributes.Health;
-	float MaxHealth = Attributes.MaxHealth;
-	
-	Attributes.Health = FMath::Clamp(Attributes.Health += healthChange, 0.f, MaxHealth);
-	
-	if (!FMath::IsNearlyEqual(OldHealth, Attributes.Health))
-	{
-		OnHealthChanged.Broadcast(Attributes.Health, OldHealth);	
-	}
-		
-	UE_LOG(LogTemp, Log, TEXT("New Health: %f of %f"), Attributes.Health, MaxHealth);*/
-}
-
 void URogueActionSystemComponent::ApplyMaxHealthChange(float maxHealthChange)
 {
 	/*float OldMaxHealth = Attributes.MaxHealth;
@@ -160,25 +146,41 @@ void URogueActionSystemComponent::ApplyMaxHealthChange(float maxHealthChange)
 	UE_LOG(LogTemp, Log, TEXT("New Max Health: %f from %f"), Attributes.MaxHealth, OldMaxHealth);*/
 }
 
+void URogueActionSystemComponent::ApplyAttributeChange(FGameplayTag AttributeTag, float Delta, EAttributeModifyType ModifyType)
+{
+	FRogueAttribute* FoundAttribute = GetAttribute(AttributeTag);
+	check(FoundAttribute != nullptr);
+	
+	float OldValue = FoundAttribute->GetValue();
+		
+	switch (ModifyType)
+	{
+	case Base:
+		FoundAttribute->Base += Delta;
+		break;
+		
+	case Modifier:
+		FoundAttribute->Modifier += Delta;
+		break;
+		
+	case OverrideBase:
+		FoundAttribute->Base = Delta;
+		break;
+		
+	default:
+		check(false);
+	}
+	
+	Attributes->PostAttributeChanged();
+	
+	UE_LOGFMT(LogTemp, Log, "Attribute: {0}, New: {1}, Old {2}", AttributeTag.ToString(), FoundAttribute->GetValue(), OldValue);
+}
+
 FRogueAttribute* URogueActionSystemComponent::GetAttribute(FGameplayTag InAttributeTag) const
 {
 	FRogueAttribute* FoundAttribute = *CachedAttributes.Find(InAttributeTag);
 	
 	return FoundAttribute;
-}
-
-bool URogueActionSystemComponent::IsFullHealth() const
-{
-	/*if (FMath::IsNearlyEqual(Attributes.Health,  Attributes.MaxHealth))
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}*/
-	
-	return true;
 }
 
 bool URogueActionSystemComponent::IsHealthy() const
