@@ -7,6 +7,8 @@
 #include "RogueAttributeSet.generated.h"
 
 
+class URogueActionSystemComponent;
+
 USTRUCT()
 struct FRogueAttribute
 {
@@ -37,6 +39,13 @@ class ACTIONROGUELIKE_API URogueAttributeSet : public UObject
 	GENERATED_BODY()
 public:
 	virtual void PostAttributeChanged() {};
+	
+	virtual void InitializeAttributes() {};
+	
+protected:
+	
+	URogueActionSystemComponent* GetOwningComponent() const;
+	
 };
 
 UCLASS()
@@ -56,4 +65,42 @@ public:
 	
 	virtual void PostAttributeChanged() override;
 		
+};
+
+
+UCLASS()
+class URoguePawnAttributeSet : public URogueHealthAttributeSet
+{
+	GENERATED_BODY()
+	
+public:
+	
+	UPROPERTY(EditAnywhere, Category = Attributes)
+	FRogueAttribute MoveSpeed;
+	
+	URoguePawnAttributeSet();
+	
+	virtual void PostAttributeChanged() override;
+	
+	virtual void InitializeAttributes() override;
+	
+	void ApplyMoveSpeed();
+};
+
+UCLASS()
+class URoguePlayerAttributeSet : public URoguePawnAttributeSet
+{
+	GENERATED_BODY()
+	
+public:
+};
+
+UCLASS()
+class URogueMonsterAttributeSet : public URoguePawnAttributeSet
+{
+	GENERATED_BODY()
+	
+public:
+	
+	URogueMonsterAttributeSet();
 };

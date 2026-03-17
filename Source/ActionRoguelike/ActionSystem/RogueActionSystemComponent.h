@@ -11,7 +11,7 @@
 class URogueAction;
 class URogueAttributeSet;
 
-UENUM()
+UENUM(BlueprintType)
 enum EAttributeModifyType
 {
 	Base,
@@ -20,8 +20,10 @@ enum EAttributeModifyType
 	Invalid
 };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHealthChanged, float, NewHealth, float, OldHealth);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnMaxHealthChanged, float, NewMaxHealth, float, OldMaxHealth);
+
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnAttributeChanged, FGameplayTag /*AttributeTag*/, float /*NewAttributeValue*/,  float /*OldAttributeValue*/);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class ACTIONROGUELIKE_API URogueActionSystemComponent : public UActorComponent
@@ -34,9 +36,11 @@ protected:
 	TObjectPtr<URogueAttributeSet> Attributes;
 	
 	TMap<FGameplayTag, FRogueAttribute*> CachedAttributes;
-	
+		
 	UPROPERTY(EditAnywhere, Category="Attributes", NoClear)
 	TSubclassOf<URogueAttributeSet> AttributeSetClass;
+	
+	TMap<FGameplayTag, FOnAttributeChanged> AttributeListeners;
 	
 	UPROPERTY(BlueprintReadOnly, Category="Health")
 	float HealthyLimit = 30;
@@ -48,9 +52,7 @@ protected:
 	TArray<TSubclassOf<URogueAction>> DefaultActions;
 	
 public:
-	UPROPERTY(BlueprintAssignable)
-	FOnHealthChanged OnHealthChanged;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnMaxHealthChanged OnMaxHealthChanged;
 
@@ -59,11 +61,15 @@ public:
 	// Sets default values for this component's properties
 	URogueActionSystemComponent();
 
+	FOnAttributeChanged& GetAttributeListener(FGameplayTag AttributeTag);
+	
 	virtual void InitializeComponent();
 	
 	void GrantAction(TSubclassOf<URogueAction> NewActionClass);
 	
-	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction);
+	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
+	
+	virtual void BeginPlay() override;
 
 	void StartAction(FGameplayTag InActionName);
 	void StopAction(FGameplayTag InActionName);
@@ -74,6 +80,7 @@ public:
 	//void ApplyHealthChange(float healthChange);
 	void ApplyMaxHealthChange(float maxHealthChange);
 	
+	UFUNCTION(BlueprintCallable)
 	void ApplyAttributeChange(FGameplayTag AttributeTag, float Delta, EAttributeModifyType ModifyType);
 	
 	FRogueAttribute* GetAttribute(FGameplayTag InAttributeTag) const;

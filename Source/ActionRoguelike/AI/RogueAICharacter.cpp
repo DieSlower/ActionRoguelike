@@ -18,7 +18,7 @@ void ARogueAICharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 	
-	ActionSystemComponent->OnHealthChanged.AddDynamic(this, &ARogueAICharacter::OnHealthChanged);
+	//ActionSystemComponent->OnHealthChanged.AddDynamic(this, &ARogueAICharacter::OnHealthChanged);
 }
 
 void ARogueAICharacter::OnHealthChanged(float NewHealth, float OldHealth)

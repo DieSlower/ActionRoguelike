@@ -15,8 +15,16 @@ TAutoConsoleVariable<float> CVarAddHealth(TEXT("game.health.AddHealth"), default
 URogueActionSystemComponent::URogueActionSystemComponent()
 {
 	bWantsInitializeComponent = true;
-
+	
+	// Enable Component Tick to make sure the CVars work -- needs to be reworked. 
+	PrimaryComponentTick.bCanEverTick = true;
+	
 	AttributeSetClass = URogueAttributeSet::StaticClass();
+}
+
+FOnAttributeChanged& URogueActionSystemComponent::GetAttributeListener(FGameplayTag AttributeTag)
+{
+	return AttributeListeners.FindOrAdd(AttributeTag);
 }
 
 void URogueActionSystemComponent::InitializeComponent()
@@ -58,6 +66,13 @@ void URogueActionSystemComponent::TickComponent(float DeltaTime, enum ELevelTick
 	// These should be run by a timer 1x per second, not in Tick()
 	ApplyCHealthChange();
 	ApplyCMaxHealthChange();
+}
+
+void URogueActionSystemComponent::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	Attributes->InitializeAttributes();
 }
 
 void URogueActionSystemComponent::StartAction(FGameplayTag InActionName)
@@ -172,6 +187,16 @@ void URogueActionSystemComponent::ApplyAttributeChange(FGameplayTag AttributeTag
 	}
 	
 	Attributes->PostAttributeChanged();
+	
+	if (FOnAttributeChanged* Event =  AttributeListeners.Find(AttributeTag))
+	{
+		Event->Broadcast(AttributeTag, FoundAttribute->GetValue(), OldValue);
+	}
+	else
+	{
+		//THis might need to be removed....since not all Actions have a delegate...some can ber changed by BPs
+		UE_LOGFMT(LogTemp, Warning, "Attribute Listener for: {0}, Not Found!!!", AttributeTag.ToString());	
+	}
 	
 	UE_LOGFMT(LogTemp, Log, "Attribute: {0}, New: {1}, Old {2}", AttributeTag.ToString(), FoundAttribute->GetValue(), OldValue);
 }

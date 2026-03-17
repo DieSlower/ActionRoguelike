@@ -62,8 +62,7 @@ protected:
 	void Move(const FInputActionValue& InValue);
 	void Look(const FInputActionInstance& InValue);
 	
-	UFUNCTION()
-	void OnHealthChanged(float NewHealth, float OldHealth);
+	void OnHealthChanged(FGameplayTag AttributeTag, float NewHealth, float OldHealth);
 	
 	//void JumpAction();
 
