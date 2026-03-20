@@ -24,13 +24,27 @@ URogueActionSystemComponent::URogueActionSystemComponent()
 
 FOnAttributeChanged& URogueActionSystemComponent::GetAttributeListener(FGameplayTag AttributeTag)
 {
+	// Bind to a c++ listener delegate
 	return AttributeListeners.FindOrAdd(AttributeTag);
 }
 
 void URogueActionSystemComponent::AddDynamicAttributeListener(FOnAttributeDynamicChanged Event,	FGameplayTag AttributeTag)
 {
+	// Bind to a BP listener delegate
 	TArray<FOnAttributeDynamicChanged>& Events = AttributeDynamicListeners.FindOrAdd(AttributeTag);
 	Events.Add(Event);
+}
+
+void URogueActionSystemComponent::RemoveDynamicAttributeListener(FOnAttributeDynamicChanged Event)
+{
+	for (TPair<FGameplayTag, TArray<FOnAttributeDynamicChanged>>& Listener : AttributeDynamicListeners)
+	{
+		if (Listener.Value.RemoveSingle(Event) > 0)
+		{
+			UE_LOGFMT(LogTemp, Warning, "Removed BP Binding");
+			break;
+		}
+	}
 }
 
 void URogueActionSystemComponent::InitializeComponent()
@@ -47,7 +61,6 @@ void URogueActionSystemComponent::InitializeComponent()
 		FGameplayTag AttributeTag = FGameplayTag::RequestGameplayTag(AttributeTagName);
 		
 		CachedAttributes.Add(AttributeTag, FoundAttribute);
-		UE_LOGFMT(LogTemp, Warning, "Size of Cache {Size} Name: {name}", CachedAttributes.GetMaxIndex(), AttributeTagName);
 	}
 	
 	for (TSubclassOf<URogueAction> ActionClass : DefaultActions)
@@ -203,13 +216,19 @@ void URogueActionSystemComponent::ApplyAttributeChange(FGameplayTag AttributeTag
 	// If the attribute has a BP listener, find it and broadcast it.
 	if (TArray<FOnAttributeDynamicChanged>* Events = AttributeDynamicListeners.Find(AttributeTag))
 	{
-		for (FOnAttributeDynamicChanged& Event : *Events)
+		bool bIsBound = true;		
+		for (int i = Events->Num() - 1; i >= 0; --i)
 		{
-			Event.Execute(AttributeTag, FoundAttribute->GetValue(), OldValue);
-		}	
-	}
-	
-	
+			FOnAttributeDynamicChanged& Event = (*Events)[i];
+			bIsBound = Event.ExecuteIfBound(AttributeTag, FoundAttribute->GetValue(), OldValue);
+			if (!bIsBound) // Delete listener if nothing is bound to it anymore.
+			{
+				Events->RemoveAt(i);
+				UE_LOGFMT(LogTemp, Log, "Cleaned up expired attribute delegate for {0}", GetNameSafe(GetOwner()));
+			}
+		}
+		
+	}	
 	UE_LOGFMT(LogTemp, Log, "Attribute: {0}, New: {1}, Old {2}", AttributeTag.ToString(), FoundAttribute->GetValue(), OldValue);
 }
 
