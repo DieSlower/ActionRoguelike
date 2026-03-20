@@ -27,6 +27,12 @@ FOnAttributeChanged& URogueActionSystemComponent::GetAttributeListener(FGameplay
 	return AttributeListeners.FindOrAdd(AttributeTag);
 }
 
+void URogueActionSystemComponent::AddDynamicAttributeListener(FOnAttributeDynamicChanged Event,	FGameplayTag AttributeTag)
+{
+	TArray<FOnAttributeDynamicChanged>& Events = AttributeDynamicListeners.FindOrAdd(AttributeTag);
+	Events.Add(Event);
+}
+
 void URogueActionSystemComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
@@ -188,15 +194,21 @@ void URogueActionSystemComponent::ApplyAttributeChange(FGameplayTag AttributeTag
 	
 	Attributes->PostAttributeChanged();
 	
+	// If the attribute has a c++ listener, find it and broadcast it. 
 	if (FOnAttributeChanged* Event =  AttributeListeners.Find(AttributeTag))
 	{
 		Event->Broadcast(AttributeTag, FoundAttribute->GetValue(), OldValue);
 	}
-	else
+	
+	// If the attribute has a BP listener, find it and broadcast it.
+	if (TArray<FOnAttributeDynamicChanged>* Events = AttributeDynamicListeners.Find(AttributeTag))
 	{
-		//THis might need to be removed....since not all Actions have a delegate...some can ber changed by BPs
-		UE_LOGFMT(LogTemp, Warning, "Attribute Listener for: {0}, Not Found!!!", AttributeTag.ToString());	
+		for (FOnAttributeDynamicChanged& Event : *Events)
+		{
+			Event.Execute(AttributeTag, FoundAttribute->GetValue(), OldValue);
+		}	
 	}
+	
 	
 	UE_LOGFMT(LogTemp, Log, "Attribute: {0}, New: {1}, Old {2}", AttributeTag.ToString(), FoundAttribute->GetValue(), OldValue);
 }
@@ -204,8 +216,13 @@ void URogueActionSystemComponent::ApplyAttributeChange(FGameplayTag AttributeTag
 FRogueAttribute* URogueActionSystemComponent::GetAttribute(FGameplayTag InAttributeTag) const
 {
 	FRogueAttribute* FoundAttribute = *CachedAttributes.Find(InAttributeTag);
-	
 	return FoundAttribute;
+}
+
+float URogueActionSystemComponent::GetAttributeValue(FGameplayTag InAttributeTag) const
+{
+	FRogueAttribute* FoundAttribute = GetAttribute(InAttributeTag);
+	return FoundAttribute->GetValue();
 }
 
 bool URogueActionSystemComponent::IsHealthy() const
@@ -221,6 +238,3 @@ bool URogueActionSystemComponent::IsHealthy() const
 	
 	return true;
 }
-
-
-

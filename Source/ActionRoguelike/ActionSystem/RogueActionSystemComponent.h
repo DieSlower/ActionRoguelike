@@ -23,7 +23,10 @@ enum EAttributeModifyType
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnMaxHealthChanged, float, NewMaxHealth, float, OldMaxHealth);
 
+// Native c++ delegate
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnAttributeChanged, FGameplayTag /*AttributeTag*/, float /*NewAttributeValue*/,  float /*OldAttributeValue*/);
+// BP Delegate
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnAttributeDynamicChanged, FGameplayTag, AttributeTag, float ,NewAttributeValue,  float, OldAttributeValue);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class ACTIONROGUELIKE_API URogueActionSystemComponent : public UActorComponent
@@ -41,6 +44,7 @@ protected:
 	TSubclassOf<URogueAttributeSet> AttributeSetClass;
 	
 	TMap<FGameplayTag, FOnAttributeChanged> AttributeListeners;
+	TMap<FGameplayTag, TArray<FOnAttributeDynamicChanged>> AttributeDynamicListeners;
 	
 	UPROPERTY(BlueprintReadOnly, Category="Health")
 	float HealthyLimit = 30;
@@ -63,6 +67,9 @@ public:
 
 	FOnAttributeChanged& GetAttributeListener(FGameplayTag AttributeTag);
 	
+	UFUNCTION(BlueprintCallable, DisplayName="Add Attribute Listener Event", meta = (keywords="events, delegate, listener"))
+	void AddDynamicAttributeListener(FOnAttributeDynamicChanged Event, FGameplayTag AttributeTag);
+	
 	virtual void InitializeComponent();
 	
 	void GrantAction(TSubclassOf<URogueAction> NewActionClass);
@@ -84,6 +91,9 @@ public:
 	void ApplyAttributeChange(FGameplayTag AttributeTag, float Delta, EAttributeModifyType ModifyType);
 	
 	FRogueAttribute* GetAttribute(FGameplayTag InAttributeTag) const;
+	
+	UFUNCTION(BlueprintCallable)
+	float GetAttributeValue(FGameplayTag InAttributeTag) const;
 	
 	bool IsHealthy() const;
 };
