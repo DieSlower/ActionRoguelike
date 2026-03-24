@@ -87,9 +87,6 @@ public:
 	void ApplyCHealthChange();
 	void ApplyCMaxHealthChange();
 	
-	//void ApplyHealthChange(float healthChange);
-	void ApplyMaxHealthChange(float maxHealthChange);
-	
 	UFUNCTION(BlueprintCallable)
 	void ApplyAttributeChange(FGameplayTag AttributeTag, float Delta, EAttributeModifyType ModifyType);
 	

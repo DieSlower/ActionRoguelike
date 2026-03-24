@@ -82,7 +82,7 @@ void URogueActionSystemComponent::TickComponent(float DeltaTime, enum ELevelTick
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
-	// These should be run by a timer 1x per second, not in Tick()
+	// These should be run by a timer 1x per second, not in Tick(). Tick=BAD
 	ApplyCHealthChange();
 	ApplyCMaxHealthChange();
 }
@@ -136,11 +136,12 @@ void URogueActionSystemComponent::ApplyCHealthChange()
 		// Check if the variable was found
 		if (CVar)
 		{
-			// Set the new value, specifying the change source (ECVF_SetByCode gives it a high priority)
+			// Set the default "check" value back, specifying the change source (ECVF_SetByCode gives it a high priority)
 			CVar->Set(defaultVal, ECVF_SetByConsole); 
+			
+			// Set the new value through a delegate
+			ApplyAttributeChange(SharedGameplayTags::Attribute_Health, healthChange, Base);
 		}
-		ApplyAttributeChange(SharedGameplayTags::Attribute_Health, healthChange, Base);
-		//UE_LOG(LogTemp, Log, TEXT("New Health: %f of %f"), Attributes.Health, Attributes.MaxHealth);
 	}	
 }
 
@@ -157,27 +158,13 @@ void URogueActionSystemComponent::ApplyCMaxHealthChange()
 		// Check if the variable was found
 		if (CVar)
 		{
-			// Set the new value, specifying the change source (ECVF_SetByCode gives it a high priority)
-			CVar->Set(defaultVal, ECVF_SetByConsole); 
+			// Set the default "check" value back,, specifying the change source (ECVF_SetByCode gives it a high priority)
+			CVar->Set(defaultVal, ECVF_SetByConsole);
+			
+			// Set the new value through a delegate
+			ApplyAttributeChange(SharedGameplayTags::Attribute_HealthMax, healthChange, OverrideBase);
 		}
-		ApplyMaxHealthChange(healthChange);		
-		//UE_LOG(LogTemp, Log, TEXT("New Max Health: %f of %f"), Attributes.Health, Attributes.MaxHealth);
 	}
-}
-
-void URogueActionSystemComponent::ApplyMaxHealthChange(float maxHealthChange)
-{
-	/*float OldMaxHealth = Attributes.MaxHealth;
-	float NewMaxHealth = Attributes.MaxHealth += maxHealthChange;
-	
-	Attributes.MaxHealth = NewMaxHealth;
-	
-	if (!FMath::IsNearlyEqual(OldMaxHealth, Attributes.MaxHealth))
-	{
-		OnMaxHealthChanged.Broadcast(Attributes.MaxHealth, OldMaxHealth);	
-	}
-		
-	UE_LOG(LogTemp, Log, TEXT("New Max Health: %f from %f"), Attributes.MaxHealth, OldMaxHealth);*/
 }
 
 void URogueActionSystemComponent::ApplyAttributeChange(FGameplayTag AttributeTag, float Delta, EAttributeModifyType ModifyType)
