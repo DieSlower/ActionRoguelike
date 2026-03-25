@@ -112,6 +112,7 @@ float ARoguePlayerCharacter::TakeDamage(float DamageAmount, struct FDamageEvent 
 	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser); 
 	
 	ActionSystemComponent->ApplyAttributeChange(SharedGameplayTags::Attribute_Health, -ActualDamage, Base);
+	ActionSystemComponent->ApplyAttributeChange(SharedGameplayTags::Attribute_RageAmount, 5, Modifier);
 	
 	return ActualDamage;
 }
