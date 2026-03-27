@@ -27,6 +27,7 @@ void URogueHealthAttributeSet::PostAttributeChanged()
 URoguePawnAttributeSet::URoguePawnAttributeSet()
 {
 	MoveSpeed = FRogueAttribute(550);
+	MoveSpeedMultiplier = FRogueAttribute(2.5);
 	
 }
 

@@ -78,6 +78,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = Attributes)
 	FRogueAttribute MoveSpeed;
 	
+	UPROPERTY(EditAnywhere, Category = Attributes)
+	FRogueAttribute MoveSpeedMultiplier;
+	
 	URoguePawnAttributeSet();
 	
 	virtual void PostAttributeChanged() override;
