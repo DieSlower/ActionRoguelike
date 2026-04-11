@@ -97,22 +97,9 @@ class URoguePlayerAttributeSet : public URoguePawnAttributeSet
 	
 public:
 	
-	UPROPERTY(EditAnywhere, Category = Attributes)
-	FRogueAttribute RageAmount;
+	UPROPERTY(EditAnywhere, Category=Attributes)
+	FRogueAttribute Rage;
 	
-	UPROPERTY(EditAnywhere, Category = Attributes)
-	FRogueAttribute RageAmountMax;
-
-	
-	URoguePlayerAttributeSet();
-	
-	virtual void PostAttributeChanged() override;
-	
-	virtual void InitializeAttributes() override;
-	
-	void ApplyRageAmount();
-	
-public:
 };
 
 UCLASS()
