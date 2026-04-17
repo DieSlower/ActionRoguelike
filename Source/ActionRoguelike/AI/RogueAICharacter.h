@@ -17,15 +17,15 @@ public:
 	// Sets default values for this character's properties
 	ARogueAICharacter();
 	
+	virtual void PostInitializeComponents() override;
+	
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 	
 protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	TObjectPtr<URogueActionSystemComponent> ActionSystemComponent;
-	
-	virtual void PostInitializeComponents() override;
-	
+			
 	UFUNCTION()
 	void OnHealthChanged(float NewHealth, float OldHealth);
 };

@@ -28,20 +28,20 @@ DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnAttributeChanged, FGameplayTag /*Attri
 // BP Delegate
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnAttributeDynamicChanged, FGameplayTag, AttributeTag, float ,NewAttributeValue,  float, OldAttributeValue);
 
-UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
+UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), HideCategories=(Navigation, Cooking, Tags))
 class ACTIONROGUELIKE_API URogueActionSystemComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 protected:
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, Instanced, NoClear, Category="ActionSystem")
 	TObjectPtr<URogueAttributeSet> Attributes;
 	
 	TMap<FGameplayTag, FRogueAttribute*> CachedAttributes;
 		
-	UPROPERTY(EditAnywhere, Category="Attributes", NoClear)
-	TSubclassOf<URogueAttributeSet> AttributeSetClass;
+	// UPROPERTY(EditAnywhere, Category="Attributes", NoClear)
+	// TSubclassOf<URogueAttributeSet> AttributeSetClass;
 	
 	TMap<FGameplayTag, FOnAttributeChanged> AttributeListeners;
 	TMap<FGameplayTag, TArray<FOnAttributeDynamicChanged>> AttributeDynamicListeners;
@@ -52,7 +52,7 @@ protected:
 	UPROPERTY()
 	TArray<TObjectPtr<URogueAction>> Actions;
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="ActionSystem")
 	TArray<TSubclassOf<URogueAction>> DefaultActions;
 	
 public:
@@ -73,7 +73,9 @@ public:
 	UFUNCTION(BlueprintCallable, DisplayName="Remove Attribute Listener Event", meta = (keywords="events, delegate, listener"))
 	void RemoveDynamicAttributeListener(FOnAttributeDynamicChanged Event);
 	
-	virtual void InitializeComponent();
+	virtual void InitializeComponent() override;
+	
+	void SetDefaultAttributeSet(TSubclassOf<URogueAttributeSet> AttributeSetClass);
 	
 	void GrantAction(TSubclassOf<URogueAction> NewActionClass);
 	

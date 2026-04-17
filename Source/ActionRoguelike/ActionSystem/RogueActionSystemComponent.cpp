@@ -19,7 +19,6 @@ URogueActionSystemComponent::URogueActionSystemComponent()
 	// Enable Component Tick to make sure the CVars work -- needs to be reworked. 
 	PrimaryComponentTick.bCanEverTick = true;
 	
-	AttributeSetClass = URogueAttributeSet::StaticClass();
 }
 
 FOnAttributeChanged& URogueActionSystemComponent::GetAttributeListener(FGameplayTag AttributeTag)
@@ -50,8 +49,13 @@ void URogueActionSystemComponent::RemoveDynamicAttributeListener(FOnAttributeDyn
 void URogueActionSystemComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
-
-	Attributes = NewObject<URogueAttributeSet>(this, AttributeSetClass);
+	
+	// Fallback check in case the user did not set an Attribute set in code or BPs
+	if (Attributes == nullptr)
+	{
+		Attributes = NewObject<URogueAttributeSet>(this, URogueAttributeSet::StaticClass());
+		UE_LOGFMT(LogTemp, Warning, "No default AttributeSet defined. Set using SetDefaultAttributeSet() during Actor Construction or assign in Blueprint Action Component for {0}", GetNameSafe(GetOwner()));
+	}
 	
 	for (TFieldIterator<FStructProperty> PropIt(Attributes->GetClass()); PropIt; ++PropIt)
 	{
@@ -70,6 +74,17 @@ void URogueActionSystemComponent::InitializeComponent()
 			GrantAction(ActionClass);
 		}
 	}
+}
+
+void URogueActionSystemComponent::SetDefaultAttributeSet(TSubclassOf<URogueAttributeSet> AttributeSetClass)
+{
+	check(!HasBeenInitialized())
+	
+	// Only available in constructors of UObjects
+	FObjectInitializer& ObjectInitializer = FObjectInitializer::Get();
+	
+	// Creates the default attribute set for this actor
+	Attributes = Cast<URogueAttributeSet>(ObjectInitializer.CreateDefaultSubobject(this, TEXT("Attributes"), AttributeSetClass, AttributeSetClass));
 }
 
 void URogueActionSystemComponent::GrantAction(TSubclassOf<URogueAction> NewActionClass)

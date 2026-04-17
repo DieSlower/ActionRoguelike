@@ -12,6 +12,7 @@ ARogueAICharacter::ARogueAICharacter()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	ActionSystemComponent = CreateDefaultSubobject<URogueActionSystemComponent>(TEXT("ActionSystemComp")); 
+	ActionSystemComponent->SetDefaultAttributeSet(URogueMonsterAttributeSet::StaticClass());
 }
 
 void ARogueAICharacter::PostInitializeComponents()
@@ -23,7 +24,7 @@ void ARogueAICharacter::PostInitializeComponents()
 
 void ARogueAICharacter::OnHealthChanged(float NewHealth, float OldHealth)
 {
-	UE_LOG(LogTemp, Log, TEXT("AI Hrealth Changed from : %f to %f"), OldHealth, NewHealth);
+	UE_LOGFMT(LogTemp, Log, "AI Health Changed from : {0}} to {1}", OldHealth, NewHealth);
 }
 
 float ARogueAICharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
