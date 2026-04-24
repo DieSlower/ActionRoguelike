@@ -12,4 +12,7 @@ namespace SharedGameplayTags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Action_SecondaryAttack)
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Action_SpecialAttack)
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Action_Sprint)
+	
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(StatusEffect_Sprinting)
+
 }
