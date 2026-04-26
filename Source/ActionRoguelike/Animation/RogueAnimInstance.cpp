@@ -20,7 +20,5 @@ void URogueAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	if (ActionComp)
 	{
 		bIsSprinting = ActionComp->ActiveGameplayTags.HasTag(SharedGameplayTags::StatusEffect_Sprinting);	
-	}
-	
-	
+	}	
 }

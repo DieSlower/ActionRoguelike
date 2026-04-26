@@ -62,6 +62,11 @@ bool URogueAction::CanStart() const
 	// Check if we have enough "cost" to use this action
 	for (TPair<FGameplayTag,float> Cost : ActivationCost)
 	{
+		if (Cost.Key.GetTagName() == "None")
+		{
+			UE_LOGFMT(LogTemp, Error, "Empty Activation Cost Present in {0}", ActionName.GetTagName());
+			return false;
+		}
 		float AvailableAttributeAmount = OwningComponent->GetAttributeValue(Cost.Key);
 		if (AvailableAttributeAmount < Cost.Value)
 		{
