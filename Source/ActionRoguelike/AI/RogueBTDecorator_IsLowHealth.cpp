@@ -14,6 +14,7 @@ bool URogueBTDecorator_IsLowHealth::CalculateRawConditionValue(UBehaviorTreeComp
 	if (ensure(ActionComp))
 	{
 		ensure(false);
+		// Is low health?
 		return false;//(ActionComp->GetHealth()/ActionComp->GetMaxHealth()) < LowHealthFraction;
 	}
 	

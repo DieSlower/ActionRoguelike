@@ -34,6 +34,24 @@ float ARogueAICharacter::TakeDamage(float DamageAmount, struct FDamageEvent cons
 	
 	ActionSystemComponent->ApplyAttributeChange(SharedGameplayTags::Attribute_Health, -ActualDamage, Base);
 	
+	
+	//Make sure the overlay is never culled out
+	GetMesh()->SetOverlayMaterialMaxDrawDistance(0);
+	
+	//Using Material Instance Dynamic, esier because it is by name, but more expensive to scale. 
+	//GetMesh()->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->TimeSeconds);
+	
+	// Using Custom Primitive Data, scales better but can conflict with index numbers. 
+	// Can get an index clash if multiple materials have the same index 0
+	// Changes Index 0, in this case on the overlay material. 
+	GetMesh()->SetCustomPrimitiveDataFloat(0, GetWorld()->TimeSeconds);
+	
+	GetWorldTimerManager().SetTimer(OverlayTimerHandle, [this]()
+	{
+		//Make sure the overlay is always culled out
+		GetMesh()->SetOverlayMaterialMaxDrawDistance(1);
+	}, 1.f, false);
+	
 	return ActualDamage;	
 }
 

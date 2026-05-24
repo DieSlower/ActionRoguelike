@@ -68,6 +68,8 @@ protected:
 
 	void StartAction(FGameplayTag InActionName);
 	void StopAction(FGameplayTag InActionName);
+	
+	FTimerHandle OverlayTimerHandle;
 
 public:	
 	virtual void PostInitializeComponents() override;

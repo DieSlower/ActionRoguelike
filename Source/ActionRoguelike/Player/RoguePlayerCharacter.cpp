@@ -33,6 +33,9 @@ void ARoguePlayerCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 	
+	//Make sure the overlay is always culled out
+	GetMesh()->SetOverlayMaterialMaxDrawDistance(1);
+	
 	//ActionSystemComponent->OnHealthChanged.AddDynamic(this, &ThisClass::OnHealthChanged);
 	//Adds a delegate function to the specific attributer listener
 	FOnAttributeChanged& Event = ActionSystemComponent->GetAttributeListener(SharedGameplayTags::Attribute_Health);
@@ -114,6 +117,21 @@ float ARoguePlayerCharacter::TakeDamage(float DamageAmount, struct FDamageEvent 
 	
 	ActionSystemComponent->ApplyAttributeChange(SharedGameplayTags::Attribute_Health, -ActualDamage, Base);
 	ActionSystemComponent->ApplyAttributeChange(SharedGameplayTags::Attribute_Rage, 5, Modifier);
+	
+	//Make sure the overlay is never culled out
+	GetMesh()->SetOverlayMaterialMaxDrawDistance(0);
+	
+	//GetMesh()->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->TimeSeconds);
+	
+	// Can get an index clash if multiple materials have the same index 0
+	// Changes Index 0, in this case on the overlay material. 
+	GetMesh()->SetCustomPrimitiveDataFloat(0, GetWorld()->TimeSeconds);
+	
+	GetWorldTimerManager().SetTimer(OverlayTimerHandle, [this]()
+	{
+		//Make sure the overlay is always culled out
+		GetMesh()->SetOverlayMaterialMaxDrawDistance(1);
+	}, 1.f, false);
 	
 	return ActualDamage;
 }
