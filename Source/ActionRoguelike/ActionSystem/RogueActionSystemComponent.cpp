@@ -3,6 +3,7 @@
 
 #include "RogueActionSystemComponent.h"
 
+#include "ActionRoguelike.h"
 #include "RogueAction.h"
 #include "RogueAttributeSet.h"
 #include "SharedGameplayTags.h"
@@ -40,7 +41,7 @@ void URogueActionSystemComponent::RemoveDynamicAttributeListener(FOnAttributeDyn
 	{
 		if (Listener.Value.RemoveSingle(Event) > 0)
 		{
-			UE_LOGFMT(LogTemp, Warning, "Removed BP Binding");
+			UE_LOGFMT(LogGame, Warning, "Removed BP Binding");
 			break;
 		}
 	}
@@ -54,7 +55,7 @@ void URogueActionSystemComponent::InitializeComponent()
 	if (Attributes == nullptr)
 	{
 		Attributes = NewObject<URogueAttributeSet>(this, URogueAttributeSet::StaticClass());
-		UE_LOGFMT(LogTemp, Warning, "No default AttributeSet defined. Set using SetDefaultAttributeSet() during Actor Construction or assign in Blueprint Action Component for {0}", GetNameSafe(GetOwner()));
+		UE_LOGFMT(LogGame, Warning, "No default AttributeSet defined. Set using SetDefaultAttributeSet() during Actor Construction or assign in Blueprint Action Component for {0}", GetNameSafe(GetOwner()));
 	}
 	
 	for (TFieldIterator<FStructProperty> PropIt(Attributes->GetClass()); PropIt; ++PropIt)
@@ -122,7 +123,7 @@ void URogueActionSystemComponent::StartAction(FGameplayTag InActionName)
 			return;
 		}
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Action Name: %s Not Found!"), *InActionName.ToString());
+	UE_LOG(LogGame, Warning, TEXT("Action Name: %s Not Found!"), *InActionName.ToString());
 }
 
 void URogueActionSystemComponent::StopAction(FGameplayTag InActionName)
@@ -138,7 +139,7 @@ void URogueActionSystemComponent::StopAction(FGameplayTag InActionName)
 			return;
 		}
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Action Name: %s Not Found!"), *InActionName.ToString());
+	UE_LOG(LogGame, Warning, TEXT("Action Name: %s Not Found!"), *InActionName.ToString());
 }
 
 void URogueActionSystemComponent::ApplyCHealthChange()
@@ -146,7 +147,7 @@ void URogueActionSystemComponent::ApplyCHealthChange()
 	float healthChange = CVarAddHealth.GetValueOnGameThread();
 	if (healthChange != defaultVal)
 	{
-		UE_LOG(LogTemp, Log, TEXT("Health Change: %f"), healthChange);
+		UE_LOG(LogGame, Log, TEXT("Health Change: %f"), healthChange);
 		
 		// Find the console variable by its name
 		IConsoleVariable* CVar = IConsoleManager::Get().FindConsoleVariable(TEXT("game.health.AddHealth"));
@@ -168,7 +169,7 @@ void URogueActionSystemComponent::ApplyCMaxHealthChange()
 	float healthChange = CVarAddMaxHealth.GetValueOnGameThread();
 	if (healthChange != defaultVal)
 	{
-		UE_LOG(LogTemp, Log, TEXT("Max Health Change: %f"), healthChange);
+		UE_LOG(LogGame, Log, TEXT("Max Health Change: %f"), healthChange);
 		
 		// Find the console variable by its name
 		IConsoleVariable* CVar = IConsoleManager::Get().FindConsoleVariable(TEXT("game.health.AddMaxHealth"));
@@ -229,12 +230,12 @@ void URogueActionSystemComponent::ApplyAttributeChange(FGameplayTag AttributeTag
 			if (!bIsBound) // Delete listener if nothing is bound to it anymore.
 			{
 				Events->RemoveAt(i);
-				UE_LOGFMT(LogTemp, Log, "Cleaned up expired attribute delegate for {0}", GetNameSafe(GetOwner()));
+				UE_LOGFMT(LogGame, Log, "Cleaned up expired attribute delegate for {0}", GetNameSafe(GetOwner()));
 			}
 		}
 		
 	}	
-	UE_LOGFMT(LogTemp, Log, "Attribute: {0}, New: {1}, Old {2}", AttributeTag.ToString(), FoundAttribute->GetValue(), OldValue);
+	UE_LOGFMT(LogGame, Log, "Attribute: {0}, New: {1}, Old {2}", AttributeTag.ToString(), FoundAttribute->GetValue(), OldValue);
 }
 
 FRogueAttribute* URogueActionSystemComponent::GetAttribute(FGameplayTag InAttributeTag) const

@@ -89,7 +89,7 @@ void ARoguePlayerCharacter::Look(const FInputActionInstance& InValue)
 void ARoguePlayerCharacter::OnHealthChanged(FGameplayTag AttributeTag, float NewHealth, float OldHealth)
 {
 	// Died?
-	if (FMath::IsNearlyZero(NewHealth))
+	if (FMath::IsNearlyZero(NewHealth) && OldHealth > 0.0f)
 	{
 		DisableInput(nullptr);
 		

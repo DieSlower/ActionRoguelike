@@ -6,6 +6,7 @@
 #include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -15,7 +16,9 @@ ARogueProjectileMagic::ARogueProjectileMagic()
 	LoopedNiagaraComponent->SetupAttachment(SphereComponent);
 	
 	LoopedAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("LoopedAudioComp"));
-	LoopedAudioComponent->SetupAttachment((SphereComponent));	
+	LoopedAudioComponent->SetupAttachment((SphereComponent));
+		
+	InitialLifeSpan = 8.0f;
 	
 }
 

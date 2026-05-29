@@ -3,6 +3,7 @@
 
 #include "RogueAction.h"
 
+#include "ActionRoguelike.h"
 #include "RogueActionSystemComponent.h"
 
 void URogueAction::StartAction_Implementation()
@@ -11,7 +12,7 @@ void URogueAction::StartAction_Implementation()
 	
 	float GameTime = GetWorld()->GetTimeSeconds();
 	
-	UE_LOGFMT(LogTemp, Log, "Started Action {ActionName} - {WorldTime}", 
+	UE_LOGFMT(LogGame, Log, "Started Action {ActionName} - {WorldTime}", 
 		("ActionName", ActionName.GetTagName()), 
 		("WorldTime", GameTime));
 	
@@ -31,7 +32,7 @@ void URogueAction::StopAction_Implementation()
 	
 	float GameTime = GetWorld()->GetTimeSeconds();
 	
-	UE_LOGFMT(LogTemp, Log, "Stopped Action {ActionName} - {WorldTime}", 
+	UE_LOGFMT(LogGame, Log, "Stopped Action {ActionName} - {WorldTime}", 
 		("ActionName", ActionName.GetTagName()), 
 		("WorldTime", GameTime));
 	
@@ -49,7 +50,7 @@ bool URogueAction::CanStart() const
 	
 	if (GetCooldownTimeRemaining() > 0.0f)
 	{
-		UE_LOGFMT(LogTemp, Log, "Cooldown Remaining {Time}", GetCooldownTimeRemaining());
+		UE_LOGFMT(LogGame, Log, "Cooldown Remaining {Time}", GetCooldownTimeRemaining());
 		return false;
 	}
 	
@@ -64,13 +65,13 @@ bool URogueAction::CanStart() const
 	{
 		if (Cost.Key.GetTagName() == "None")
 		{
-			UE_LOGFMT(LogTemp, Error, "Empty Activation Cost Present in {0}", ActionName.GetTagName());
+			UE_LOGFMT(LogGame, Error, "Empty Activation Cost Present in {0}", ActionName.GetTagName());
 			return false;
 		}
 		float AvailableAttributeAmount = OwningComponent->GetAttributeValue(Cost.Key);
 		if (AvailableAttributeAmount < Cost.Value)
 		{
-			UE_LOGFMT(LogTemp, Warning, "Not enough {AttributeName} to activate {ActionName}."
+			UE_LOGFMT(LogGame, Warning, "Not enough {AttributeName} to activate {ActionName}."
 							"Have {AvailableAttributeValue} and need {RequiredAttributeValue}.",
 							("AttributeName", Cost.Key.ToString()),
 							("ActionName", ActionName.ToString()),

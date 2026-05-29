@@ -44,6 +44,7 @@ void URogueInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickT
 	TArray<FOverlapResult> Overlaps;
 	GetWorld()->OverlapMultiByChannel(Overlaps, Center, FQuat::Identity, CollisionChannel, Sphere);
 		
+	AActor* BestActor = nullptr;
 	float HighestWeight = 0.0;
 	
 	bool bEnabledDebugDraw = CVarInteractionDebugDrawing.GetValueOnGameThread();
@@ -59,15 +60,17 @@ void URogueInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickT
 		FVector OverlapDirection = (Origin-CameraLocation).GetSafeNormal();			
 		
 		float DistanceToSqrd = (Origin - Center).SizeSquared();
+		// Normalize and invert, smaller distance is higher weight
 		float NormalizedDistanceTo = 1.0f - (DistanceToSqrd / InteractionRadiusSqrd);
 		
 		float DotResult = FVector::DotProduct(OverlapDirection, PC->GetControlRotation().Vector());
+		// Normalize 0.0f - 1.0f
 		float NormalizedDotResult = DotResult * 0.5f + 0.5f;  
 		
-		float Weight = NormalizedDotResult * DirectionWeightScale + NormalizedDistanceTo * DistanceToWeightScale;
+		float Weight = (NormalizedDotResult * DirectionWeightScale) + (NormalizedDistanceTo * DistanceToWeightScale);
 		if (Weight > HighestWeight)
 		{
-			SelectedActor = Overlap.GetActor();
+			BestActor = Overlap.GetActor();
 			HighestWeight = DotResult;
 		}
 		
@@ -79,11 +82,13 @@ void URogueInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickT
 		}		
 	}
 		
+	SelectedActor = BestActor;
+	
 	if (bEnabledDebugDraw)
 	{
-		if (SelectedActor != nullptr)
+		if (BestActor != nullptr)
 		{		
-			DrawDebugBox(GetWorld(), SelectedActor->GetActorLocation(), FVector(70.f), FColor::Green);
+			DrawDebugBox(GetWorld(), BestActor->GetActorLocation(), FVector(70.f), FColor::Green);
 		}
 	
 		DrawDebugSphere(GetWorld(), Center, InteractionRadius, 32, FColor::White);	

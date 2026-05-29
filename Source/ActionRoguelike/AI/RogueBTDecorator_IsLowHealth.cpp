@@ -5,17 +5,20 @@
 
 #include "AIController.h"
 #include "ActionSystem/RogueActionSystemComponent.h"
+#include "SharedGameplayTags.h"
 
 bool URogueBTDecorator_IsLowHealth::CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const
 {
 	APawn* Pawn = OwnerComp.GetAIOwner()->GetPawn();
+	
+	check(Pawn)
 		
 	URogueActionSystemComponent* ActionComp = Cast<URogueActionSystemComponent>(Pawn->GetComponentByClass(URogueActionSystemComponent::StaticClass()));
 	if (ensure(ActionComp))
 	{
-		ensure(false);
+		float HealthFraction = ActionComp->GetAttributeValue(SharedGameplayTags::Attribute_Health) / ActionComp->GetAttributeValue(SharedGameplayTags::Attribute_HealthMax);
 		// Is low health?
-		return false;//(ActionComp->GetHealth()/ActionComp->GetMaxHealth()) < LowHealthFraction;
+		return HealthFraction < LowHealthFraction;
 	}
 	
 	return false;

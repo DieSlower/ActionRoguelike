@@ -3,6 +3,7 @@
 
 #include "RogueAICharacter.h"
 
+#include "ActionRoguelike.h"
 #include "SharedGameplayTags.h"
 #include "ActionSystem/RogueActionSystemComponent.h"
 
@@ -19,12 +20,15 @@ void ARogueAICharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 	
+	//Make sure the overlay is always culled out
+	GetMesh()->SetOverlayMaterialMaxDrawDistance(1);
+	
 	//ActionSystemComponent->OnHealthChanged.AddDynamic(this, &ARogueAICharacter::OnHealthChanged);
 }
 
 void ARogueAICharacter::OnHealthChanged(float NewHealth, float OldHealth)
 {
-	UE_LOGFMT(LogTemp, Log, "AI Health Changed from : {0}} to {1}", OldHealth, NewHealth);
+	UE_LOGFMT(LogGame, Log, "AI Health Changed from : {0}} to {1}", OldHealth, NewHealth);
 }
 
 float ARogueAICharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
