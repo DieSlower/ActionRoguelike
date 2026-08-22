@@ -3,10 +3,20 @@
 
 #include "RogueCoinPickupSubsystem.h"
 
+#include "ActionRoguelike.h"
+#include "EngineUtils.h"
+#include "Player/RoguePlayerCharacter.h"
+
 void URogueCoinPickupSubsystem::AddCoinPickups(TArray<FVector> NewLocations, TArray<int32> NewAmounts)
 {
 	CoinLocations.Append(NewLocations);
 	CoinAmounts.Append(NewAmounts);
+}
+
+void URogueCoinPickupSubsystem::RemoveCoinPickup(int32 IndexToRemove)
+{
+	CoinLocations.RemoveAt(IndexToRemove);
+	CoinAmounts.RemoveAt(IndexToRemove);
 }
 
 void URogueCoinPickupSubsystem::Tick(float DeltaTime)
@@ -14,6 +24,40 @@ void URogueCoinPickupSubsystem::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	
 	UWorld* World = GetWorld();
+	
+	FVector PlayerLocation = FVector::ZeroVector;
+	for (ARoguePlayerCharacter* PlayerCharacter : TActorRange<ARoguePlayerCharacter>(World))
+	{
+		PlayerLocation = PlayerCharacter->GetActorLocation();
+	}
+
+	
+	const float PickupRadius = 200.0f;
+	
+	
+	TArray<int32> ProssesList;
+	
+	for (int i = 0; i < CoinLocations.Num(); ++i)
+	{
+		float Dist = FVector::Dist(PlayerLocation, CoinLocations[i]);
+		if (Dist < PickupRadius)
+		{
+			ProssesList.Add(i);
+		}
+	}
+	
+	int32 TotalCoinsToGrant = 0;
+	for (int i = ProssesList.Num()-1; i >= 0; --i)
+	{
+		int32 CoinIndex = ProssesList[i];
+		TotalCoinsToGrant += CoinAmounts[CoinIndex];
+		
+		RemoveCoinPickup(CoinIndex);
+	}
+	
+	// @todo grant coins to the player
+	UE_CLOG(TotalCoinsToGrant > 0, LogGame, Log, TEXT("Picked up coins amount: %i"), TotalCoinsToGrant);		
+
 	
 	for (int i = 0; i < CoinLocations.Num(); ++i)
 	{
