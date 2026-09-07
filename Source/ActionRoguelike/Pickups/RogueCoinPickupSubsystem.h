@@ -24,9 +24,15 @@ public:
 	
 	virtual TStatId GetStatId() const override;
 	
+	virtual void OnWorldBeginPlay(UWorld& InWorld) override;
+	
 protected:
+	UPROPERTY()
+	TObjectPtr<UInstancedStaticMeshComponent> WorldISM;
 	
 	TArray<FVector> CoinLocations;
 	TArray<int32> CoinAmounts;
+	
+	TArray<FPrimitiveInstanceId>MeshIDs;
 	
 };
