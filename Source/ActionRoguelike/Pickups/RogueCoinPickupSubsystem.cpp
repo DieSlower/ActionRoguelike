@@ -6,6 +6,7 @@
 #include "ActionRoguelike.h"
 #include "EngineUtils.h"
 #include "Components/InstancedStaticMeshComponent.h"
+#include "Core/URogueDeveloperSettings.h"
 #include "Player/RoguePlayerCharacter.h"
 
 void URogueCoinPickupSubsystem::OnWorldBeginPlay(UWorld& InWorld)
@@ -15,13 +16,24 @@ void URogueCoinPickupSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 	UWorld* World = GetWorld();
 	
 	//Temp Hack for mesh loading
-	FSoftObjectPath MeshAssetPath(TEXT("/Game/ExampleContent/Meshes/SM_Pickup_Coin.SM_Pickup_Coin"));
-	UStaticMesh* LoadedMesh = Cast<UStaticMesh>( MeshAssetPath.TryLoad());
+	//FSoftObjectPath MeshAssetPath(TEXT("/Game/ExampleContent/Meshes/SM_Pickup_Coin.SM_Pickup_Coin"));
+	//UStaticMesh* LoadedMesh = Cast<UStaticMesh>( MeshAssetPath.TryLoad());
+	
+	
 	
 	WorldISM = NewObject<UInstancedStaticMeshComponent>(World, NAME_None, RF_Transient);
 	WorldISM->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	WorldISM->SetStaticMesh(LoadedMesh);
 	WorldISM->RegisterComponentWithWorld(World);
+	
+	//Make an async delegate to load the static mesh
+	GetDefault<URogueDeveloperSettings>()->CoinPickupMesh.LoadAsync(
+		FLoadSoftObjectPathAsyncDelegate::CreateUObject(this, &URogueCoinPickupSubsystem::OnPickupMeshLoadComplete)
+		);
+}
+
+void URogueCoinPickupSubsystem::OnPickupMeshLoadComplete(const FSoftObjectPath& SoftObjectPth, UObject* LoadedObject)
+{
+	WorldISM->SetStaticMesh(Cast<UStaticMesh>(LoadedObject));
 }
 
 void URogueCoinPickupSubsystem::AddCoinPickups(TArray<FVector> NewLocations, TArray<int32> NewAmounts)

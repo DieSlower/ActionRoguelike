@@ -27,6 +27,9 @@ public:
 	virtual void OnWorldBeginPlay(UWorld& InWorld) override;
 	
 protected:
+	
+	void OnPickupMeshLoadComplete(const FSoftObjectPath& SoftObjectPth, UObject* LoadedObject);
+	
 	UPROPERTY()
 	TObjectPtr<UInstancedStaticMeshComponent> WorldISM;
 	
