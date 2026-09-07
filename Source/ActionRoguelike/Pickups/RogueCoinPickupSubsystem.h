@@ -19,7 +19,7 @@ public:
 	void AddCoinPickups(TArray<FVector> NewLocations, TArray<int32> NewAmounts);
 	
 	void RemoveCoinPickup(int32 IndexToRemove);
-	
+
 	virtual void Tick(float DeltaTime) override;
 	
 	virtual TStatId GetStatId() const override;
@@ -29,9 +29,18 @@ public:
 protected:
 	
 	void OnPickupMeshLoadComplete(const FSoftObjectPath& SoftObjectPth, UObject* LoadedObject);
+	void OnPickupSoundLoadComplete(const FSoftObjectPath& SoftObjectPth, UObject* LoadedObject);
+	
+	void PlayPickupSound();
 	
 	UPROPERTY()
 	TObjectPtr<UInstancedStaticMeshComponent> WorldISM;
+	
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> WorldAudioComp;
+	
+	// Cached param from Developer Settings for Audio Comp pickup
+	FName CoinPickupTriggerParameterName;
 	
 	TArray<FVector> CoinLocations;
 	TArray<int32> CoinAmounts;

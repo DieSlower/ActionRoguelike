@@ -5,6 +5,7 @@
 
 #include "ActionRoguelike.h"
 #include "EngineUtils.h"
+#include "Components/AudioComponent.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Core/URogueDeveloperSettings.h"
 #include "Player/RoguePlayerCharacter.h"
@@ -25,15 +26,44 @@ void URogueCoinPickupSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 	WorldISM->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	WorldISM->RegisterComponentWithWorld(World);
 	
+	
+	const URogueDeveloperSettings* DevSettings = GetDefault<URogueDeveloperSettings>();
+	
+	//Get the triger name from settings
+	CoinPickupTriggerParameterName = DevSettings->CoinPickupTriggerParameter;
+	
 	//Make an async delegate to load the static mesh
-	GetDefault<URogueDeveloperSettings>()->CoinPickupMesh.LoadAsync(
+	DevSettings->CoinPickupMesh.LoadAsync(
 		FLoadSoftObjectPathAsyncDelegate::CreateUObject(this, &URogueCoinPickupSubsystem::OnPickupMeshLoadComplete)
+		);
+	
+	WorldAudioComp = NewObject<UAudioComponent>(World, NAME_None, RF_Transient);
+	WorldAudioComp->SetAutoActivate(false);
+	WorldAudioComp->RegisterComponentWithWorld(World);
+	
+	//Make an async delegate to load the sound effect
+	DevSettings->CoinPickupSound.LoadAsync(
+		FLoadSoftObjectPathAsyncDelegate::CreateUObject(this, &URogueCoinPickupSubsystem::OnPickupSoundLoadComplete)
 		);
 }
 
 void URogueCoinPickupSubsystem::OnPickupMeshLoadComplete(const FSoftObjectPath& SoftObjectPth, UObject* LoadedObject)
 {
 	WorldISM->SetStaticMesh(Cast<UStaticMesh>(LoadedObject));
+}
+
+void URogueCoinPickupSubsystem::OnPickupSoundLoadComplete(const FSoftObjectPath& SoftObjectPth, UObject* LoadedObject)
+{
+	WorldAudioComp->SetSound(Cast<USoundBase>(LoadedObject));
+}
+
+void URogueCoinPickupSubsystem::PlayPickupSound()
+{
+	if(!WorldAudioComp->IsPlaying())
+	{
+		WorldAudioComp->Play();
+	}
+	WorldAudioComp->SetTriggerParameter(CoinPickupTriggerParameterName);
 }
 
 void URogueCoinPickupSubsystem::AddCoinPickups(TArray<FVector> NewLocations, TArray<int32> NewAmounts)
@@ -96,6 +126,11 @@ void URogueCoinPickupSubsystem::Tick(float DeltaTime)
 		TotalCoinsToGrant += CoinAmounts[CoinIndex];
 		
 		RemoveCoinPickup(CoinIndex);
+	}
+	
+	if (TotalCoinsToGrant > 0)
+	{
+		PlayPickupSound();
 	}
 	
 	// @todo grant coins to the player

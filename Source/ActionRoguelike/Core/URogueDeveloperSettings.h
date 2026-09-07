@@ -20,6 +20,12 @@ public:
 	UPROPERTY(Config, EditDefaultsOnly, Category=Pickup)
 	TSoftObjectPtr<UStaticMesh> CoinPickupMesh;
 	
+	UPROPERTY(Config, EditDefaultsOnly, Category=Pickup)
+	TSoftObjectPtr<USoundBase> CoinPickupSound;
+	
+	UPROPERTY(Config, EditDefaultsOnly, Category=Pickup)
+	FName CoinPickupTriggerParameter;
+	
 	virtual FName GetCategoryName() const override;
 	
 };
